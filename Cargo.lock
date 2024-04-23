@@ -2762,6 +2762,7 @@ dependencies = [
 [[package]]
 name = "kalosm"
 version = "0.2.2"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2786,6 +2787,7 @@ dependencies = [
 [[package]]
 name = "kalosm-common"
 version = "0.1.0"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "candle-core",
@@ -2800,6 +2802,7 @@ dependencies = [
 [[package]]
 name = "kalosm-language"
 version = "0.2.2"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "arroy",
@@ -2860,6 +2863,7 @@ dependencies = [
 [[package]]
 name = "kalosm-language-model"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "async-openai",
@@ -2896,6 +2900,7 @@ dependencies = [
 [[package]]
 name = "kalosm-llama"
 version = "0.2.2"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2921,6 +2926,7 @@ dependencies = [
 [[package]]
 name = "kalosm-ocr"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "candle-core",
@@ -2940,6 +2946,7 @@ dependencies = [
 [[package]]
 name = "kalosm-sample"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "candle-core",
@@ -2955,6 +2962,7 @@ dependencies = [
 [[package]]
 name = "kalosm-sound"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2983,6 +2991,7 @@ dependencies = [
 [[package]]
 name = "kalosm-streams"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "futures-util",
@@ -2995,6 +3004,7 @@ dependencies = [
 [[package]]
 name = "kalosm-vision"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "image 0.24.9",
  "kalosm-ocr",
@@ -4627,6 +4637,7 @@ dependencies = [
 [[package]]
 name = "rbert"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4856,6 +4867,7 @@ dependencies = [
 [[package]]
 name = "rphi"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5024,6 +5036,7 @@ checksum = "80af6f9131f277a45a3fba6ce8e2258037bb0477a67e610d3c1fe046ab31de47"
 [[package]]
 name = "rwhisper"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "accelerate-src",
  "anyhow",
@@ -5053,6 +5066,7 @@ dependencies = [
 [[package]]
 name = "rwuerstchen"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5193,6 +5207,7 @@ dependencies = [
 [[package]]
 name = "segment-anything-rs"
 version = "0.2.1"
+source = "git+https://github.com/floneum/floneum?branch=improve-node-interface#b6a58f3ed9a2faf6562e6ea5d8b2f8fdc3920cab"
 dependencies = [
  "anyhow",
  "candle-core",

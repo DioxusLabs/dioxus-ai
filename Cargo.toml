@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.82"
-kalosm = { path = "/Users/evanalmloff/Desktop/Github/floneum/interfaces/kalosm", default-features = false, features = ["language"] }
+kalosm = { git = "https://github.com/floneum/floneum", branch = "improve-node-interface", default-features = false, features = ["language"] }
 scraper = "0.19.0"
 tokio = { version = "1.37.0", features = ["full"] }
 tracing-subscriber = "0.3.18"
