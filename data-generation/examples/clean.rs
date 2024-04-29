@@ -58,10 +58,22 @@ fn main() {
             .push(validated_response);
     }
 
-    println!("combined: {}", combined.len());
+    println!("prompts deduplicated: {}", combined.len());
 
     let mut file = std::fs::File::create("validated.json").unwrap();
     serde_json::to_writer_pretty(&mut file, &combined).unwrap();
+
+    // Print a the first prompt and the first response
+    let first_prompt = combined.keys().next().unwrap();
+    println!("First prompt: {}", first_prompt);
+    let first_response = combined.get(first_prompt).unwrap().first().unwrap();
+    println!("First response: {}", first_response.description);
+    println!("\nHTML:\n{}", first_response.html);
+    println!("\nComponents:");
+    for component in &first_response.components {
+        println!("- {}", component.name);
+        println!("{}", component.html);
+    }
 }
 
 const QUESTIONS: &[&str] = &[
@@ -98,9 +110,9 @@ impl ValidatedResponse {
             components,
         };
 
-        // if myself.remove_unused_components() {
-        //     return None;
-        // }
+        if myself.remove_unused_components() {
+            return None;
+        }
 
         if myself.contains_hallucinated_components() {
             return None;
@@ -121,7 +133,6 @@ impl ValidatedResponse {
                 .filter(|c| !c.is_whitespace())
                 .collect::<String>();
 
-            let mut in_element_like = false;
             let mut last_char_was_open = false;
             let mut building_component_name = false;
             let mut component_name = String::new();
@@ -134,10 +145,7 @@ impl ValidatedResponse {
                     building_component_name = true;
                 }
 
-                if c == '<' {
-                    in_element_like = true;
-                } else if c == '/' || c == '>' {
-                    in_element_like = false;
+                if c == '/' || c == '>' {
                     if building_component_name {
                         let component_name_trimmed = component_name.trim();
                         if component_name_trimmed.is_empty() {
