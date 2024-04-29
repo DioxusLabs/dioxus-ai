@@ -117,7 +117,10 @@ COMPONENT HTML:
 {component_html}"
         );
 
-        Self { input: prompt, output: response }
+        Self {
+            input: prompt,
+            output: response,
+        }
     }
 }
 

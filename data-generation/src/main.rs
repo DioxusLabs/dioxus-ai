@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use data_gen::{Chat, Train, PROMPT, UI_COMPONENTS_2};
+use data_gen::{Chat, Train, PROMPT, UI_COMPONENTS};
 use fundu::parse_duration;
 use reqwest::Client;
 use tokio::{fs::File, io::AsyncWriteExt};
@@ -13,7 +13,7 @@ async fn main() {
     let mut data_count = 0;
 
     loop {
-        let mut iter = UI_COMPONENTS_2.iter().peekable();
+        let mut iter = UI_COMPONENTS.iter().peekable();
         while let Some(component) = iter.peek() {
             let component = component.trim();
             println!("Generating for {}", component);
