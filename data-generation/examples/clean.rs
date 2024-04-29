@@ -74,6 +74,51 @@ fn main() {
         println!("- {}", component.name);
         println!("{}", component.html);
     }
+
+    let mut csv_writer = csv::Writer::from_path("data.csv").unwrap();
+    for (prompt, mut validated_responses) in combined {
+        let validated_response = validated_responses.pop().unwrap();
+        let training_example = TrainingExample::new(prompt.to_string(), validated_response);
+        csv_writer.serialize(training_example).unwrap();
+    }
+}
+
+// A normalized, validated training example
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
+struct TrainingExample {
+    pub input: String,
+    pub output: String,
+}
+
+impl TrainingExample {
+    fn new(prompt: String, validated_response: ValidatedResponse) -> Self {
+        let description = &validated_response.description;
+        let html = &validated_response.html;
+        let component_descriptions = validated_response
+            .components
+            .iter()
+            .map(|component| format!("- {}: {}", component.name, component.description))
+            .collect::<Vec<String>>()
+            .join("\n");
+        let component_html = validated_response
+            .components
+            .iter()
+            .map(|component| format!("{}:\n{}", component.name, component.html))
+            .collect::<Vec<String>>()
+            .join("\n");
+        let response = format!(
+            "DESCRIPTION:
+{description}
+COMPONENTS:
+{component_descriptions}
+HTML:
+{html}
+COMPONENT HTML:
+{component_html}"
+        );
+
+        Self { input: prompt, output: response }
+    }
 }
 
 const QUESTIONS: &[&str] = &[
@@ -84,7 +129,30 @@ const QUESTIONS: &[&str] = &[
 ];
 
 fn normalize_html(html: &str) -> String {
-    html.trim().replace("\n", "").replace("className", "class")
+    let mut output = String::new();
+    let mut after_node_before_non_whitespace = true;
+    for c in html.chars() {
+        let is_whitespace = c.is_whitespace();
+        if after_node_before_non_whitespace && is_whitespace {
+            continue;
+        } else if c == '>' {
+            output.push('>');
+            after_node_before_non_whitespace = true;
+        } else {
+            output.push(c);
+            after_node_before_non_whitespace = is_whitespace;
+        }
+
+        if c == '>' || c == '/' {
+            output.pop();
+            if output.ends_with(' ') {
+                output.pop();
+            }
+            output.push(c);
+        }
+    }
+
+    output.trim().replace("className", "class")
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
