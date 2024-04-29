@@ -83,6 +83,10 @@ const QUESTIONS: &[&str] = &[
     "what is the html for each component?",
 ];
 
+fn normalize_html(html: &str) -> String {
+    html.trim().replace("\n", "").replace("className", "class")
+}
+
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
 struct ValidatedResponse {
     description: String,
@@ -94,7 +98,7 @@ impl ValidatedResponse {
     fn from_parsed_response(parsed_response: ParsedResponse) -> Option<Self> {
         let mut components = Vec::new();
         let description = parsed_response.description.trim().to_string();
-        let html = parsed_response.main_html.trim().to_string();
+        let html = normalize_html(&parsed_response.main_html);
 
         for (description, html) in parsed_response
             .component_list
@@ -257,7 +261,7 @@ impl Component {
         let is_standalone = description.is_standalone;
 
         let description = description.description.trim().to_string();
-        let html = html.html.trim().to_string();
+        let html = normalize_html(&html.html);
 
         // If it says it's a standalone component, make sure it doesn't contain {children}
         if is_standalone {
@@ -274,7 +278,7 @@ impl Component {
             name: name.to_string(),
             is_standalone,
             description: description.trim().to_string(),
-            html: html.trim().to_string(),
+            html,
         })
     }
 }
