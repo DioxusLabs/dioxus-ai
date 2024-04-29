@@ -81,8 +81,8 @@ struct ValidatedResponse {
 impl ValidatedResponse {
     fn from_parsed_response(parsed_response: ParsedResponse) -> Option<Self> {
         let mut components = Vec::new();
-        let description = parsed_response.description;
-        let html = parsed_response.main_html;
+        let description = parsed_response.description.trim().to_string();
+        let html = parsed_response.main_html.trim().to_string();
 
         for (description, html) in parsed_response
             .component_list
@@ -265,8 +265,8 @@ impl Component {
         Some(Component {
             name: name.to_string(),
             is_standalone,
-            description,
-            html,
+            description: description.trim().to_string(),
+            html: html.trim().to_string(),
         })
     }
 }
