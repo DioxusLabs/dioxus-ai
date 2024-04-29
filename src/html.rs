@@ -38,10 +38,7 @@ fn test_regex() {
     let regex_parser = RegexParser::new(HTML_REGEX).unwrap();
 
     let state = regex_parser.create_parser_state();
-    let result = regex_parser.parse(
-        &state,
-        b"<div></div>",
-    );
+    let result = regex_parser.parse(&state, b"<div></div>");
     assert!(result.is_ok());
 
     let state = regex_parser.create_parser_state();

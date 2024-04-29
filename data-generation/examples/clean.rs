@@ -41,13 +41,21 @@ fn main() {
 
     let validated = filtered
         .into_iter()
-        .filter_map(|(prompt, parsed_response)| Some((prompt, ValidatedResponse::from_parsed_response(parsed_response)?)))
+        .filter_map(|(prompt, parsed_response)| {
+            Some((
+                prompt,
+                ValidatedResponse::from_parsed_response(parsed_response)?,
+            ))
+        })
         .collect::<Vec<(String, ValidatedResponse)>>();
     println!("validated: {}", validated.len());
 
     let mut combined = HashMap::new();
     for (prompt, validated_response) in validated {
-        combined.entry(prompt).or_insert(Vec::new()).push(validated_response);
+        combined
+            .entry(prompt)
+            .or_insert(Vec::new())
+            .push(validated_response);
     }
 
     println!("combined: {}", combined.len());
@@ -84,15 +92,64 @@ impl ValidatedResponse {
             components.push(Component::new(description, html)?);
         }
 
-        if components.is_empty() {
-            return None;
-        }
-
-        Some(ValidatedResponse {
+        let mut myself = ValidatedResponse {
             description,
             html,
             components,
-        })
+        };
+
+        myself.remove_unused_components();
+
+        if myself. components.is_empty() {
+            return None;
+        }
+
+        Some(myself)
+    }
+
+    fn remove_unused_components(&mut self) {
+        let mut used_components = Vec::new();
+        for (i, component) in self.components.iter().enumerate() {
+            let start_jsx = format!("<{}>", component.name);
+            let end_jsx = format!("</{}>", component.name);
+            let mut used = false;
+            for html in self.html_iterator() {
+                let without_whitespace = html
+                    .chars()
+                    .filter(|c| !c.is_whitespace())
+                    .collect::<String>();
+                let contains_component = (component.is_standalone
+                    || without_whitespace.contains(&start_jsx))
+                    && without_whitespace.contains(&end_jsx);
+                if contains_component {
+                    used = true;
+                    break;
+                }
+            }
+            if used {
+                used_components.push(i);
+            }
+        }
+
+        if used_components.len() < self.components.len() {
+            let mut use_components_iter = used_components.iter().peekable();
+            for i in (0..used_components.len()).rev() {
+                if let Some(next_used_component_index) = use_components_iter.peek().copied() {
+                    if i == *next_used_component_index {
+                        use_components_iter.next();
+                    } else {
+                        self.components.remove(i);
+                    }
+                }
+            }
+        }
+    }
+
+    fn html_iterator(&self) -> impl Iterator<Item = &str> {
+        self.components
+            .iter()
+            .map(|component| &*component.html)
+            .chain(std::iter::once(&*self.html))
     }
 }
 
