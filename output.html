@@ -9,34 +9,47 @@
   <body>
     <div class="h-screen flex justify-center items-center">
       <div class="bg-white p-6 shadow-md w-full max-w-lg">
+        <!-- Header -->
         <nav class="bg-gray-200 p-2 text-lg font-bold">
-          <ul class="flex justify-between items-center">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Adopt a Cat</a></li>
+          <ul class="flex justify-between items-center w-full max-w-md mx-auto py-0 my-0 list-none">
+            <!-- Navigation links -->
           </ul>
         </nav>
-        <section class="bg-gray-100 p-6">
-          <img src="{cat_image}" alt="A cute cat" />
-          <p>{hero_text}</p>
+        
+        <!-- Hero Section -->
+        <section class="h-screen flex justify-center items-center bg-cover" style="background-image:url({hero_image})">
+          <div class="bg-white p-6 shadow-md w-full max-w-lg text-gray-700">
+            <img src="{profile_picture}" alt="Evan Almloff" />
+            <p>{headline}</p>
+            <button>Learn More</button>
+          </div>
         </section>
-        <p class="text-lg font-bold">{about_us_content}</p>
-        <ul class="flex flex-col">
-          {FeatureItem}
+    
+        <!-- About Me Card -->
+        <div class="p-4 border rounded-sm bg-white shadow-md hover:shadow-lg">
+          <!-- Children -->
+          <h2 class="text-lg font-bold">Who I Am:</h2>
+          {about_me}
+        </div>
+    
+        <!-- Skills List -->
+        <ul class="bg-gray-200 p-6 text-sm list-none flex-wrap justify-center items-start w-full max-w-md mx-auto py-0 my-0">
+          <li class="bg-gray-200 p-4 text-sm">
+            {skill}
+          </li>
         </ul>
-        <button
-          class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Adopt a Cat Today!
-        </button>
+    
+        <!-- Projects Grid -->
+        <div class="grid grid-cols-1 gap-x-6 p-4 shadow-md hover:shadow-lg bg-white rounded-sm overflow-hidden">
+          <!-- Children -->
+          <div
+            class="grid grid-cols-1 gap-x-6 p-4 shadow-md hover:shadow-lg"
+          >
+            {project_title}
+            <img src="{project.image}" alt="Project Image" />
+          </div>
+        </div>
       </div>
-      <footer class="p-6 bg-gray-200 text-lg font-bold">
-        <ul class="flex justify-between items-center">
-          <li><a href="#">Terms and Conditions</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Contact Us</a></li>
-        </ul>
-      </footer>
     </div>
   </body>
 </html>

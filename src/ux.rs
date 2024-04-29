@@ -1,14 +1,11 @@
 use kalosm::language::*;
-use std::fmt::Display;
+use std::{fmt::Display, io::Write, ops::DerefMut};
 
 use crate::pretty_print::get_clean_html;
 
-mod pretty_print;
-
-#[tokio::main]
-async fn main() {
+pub async fn ux() {
     let llm = Llama::builder()
-        .with_source(LlamaSource::llama_8b_chat())
+        .with_source(LlamaSource::phi_3_mini_4k_instruct())
         .build()
         .await
         .unwrap();
@@ -24,15 +21,16 @@ async fn main() {
 You must respond with this format:
 1) What did you expect to happen when you made the action?
 2) What changed in the new html?
-3) Does this behavior makes sense for {application_name}?
-4) Does this behavior make sense? (respond with yes or no)"#))
+3) Why does behavior makes sense or not for {application_name}?
+4) Does this behavior make sense? (respond with yes, or no)"#))
         .with_constraints(constraints)
         .build();
 
-    let mut prompts = Vec::new();
+    let mut should_be_yes = Vec::new();
+    let mut should_be_no = Vec::new();
 
     {
-        let buttons = ["components.rs", "async.rs", "server.rs", "global.rs"];
+        let buttons = ["component.rs", "async.rs", "server.rs", "global_state.rs"];
         // Navigate to dioxuslabs.com
         let tab = Tab::new("https://dioxuslabs.com".parse().unwrap(), false).unwrap();
 
@@ -61,12 +59,12 @@ You must respond with this format:
                 new: new_html,
             };
 
-            prompts.push(prompt);
+            should_be_yes.push(prompt);
         }
     }
 
     {
-        let buttons = ["components.rs", "async.rs", "server.rs", "global.rs"];
+        let buttons = ["component.rs", "async.rs", "server.rs", "global_state.rs"];
         // Navigate to dioxuslabs.com
         let tab = Tab::new("https://dioxuslabs.com".parse().unwrap(), false).unwrap();
 
@@ -95,18 +93,55 @@ You must respond with this format:
                 new: new_html,
             };
 
-            prompts.push(prompt);
+            should_be_no.push(prompt);
         }
     }
 
-    for prompt in prompts {
-        println!("\nPROMPT:\n{prompt}\n");
+    let mut true_positives = 0;
+    let mut false_positives = 0;
+    let mut false_negatives = 0;
+    let mut true_negatives = 0;
 
-        task.run(&prompt.to_string(), &llm)
-            .to_std_out()
-            .await
-            .unwrap();
+    for prompt in should_be_yes {
+        println!("\nPROMPT (should be yes):\n{prompt}\n");
+
+        let mut all_text = String::new();
+        let mut stream = task.run(&prompt.to_string(), &llm);
+        while let Some(text) = stream.next().await {
+            all_text.push_str(&text);
+            print!("{text}");
+            std::io::stdout().flush().unwrap();
+        }
+
+        if all_text.contains("Does this behavior make sense? yes") {
+            true_positives += 1;
+        } else if all_text.contains("Does this behavior make sense? no") {
+            false_negatives += 1;
+        }
     }
+
+    for prompt in should_be_no {
+        println!("\nPROMPT (should be no):\n{prompt}\n");
+
+        let mut all_text = String::new();
+        let mut stream = task.run(&prompt.to_string(), &llm);
+        while let Some(text) = stream.next().await {
+            all_text.push_str(&text);
+            print!("{text}");
+            std::io::stdout().flush().unwrap();
+        }
+
+        if all_text.contains("Does this behavior make sense? no") {
+            true_negatives += 1;
+        } else if all_text.contains("Does this behavior make sense? yes") {
+            false_positives += 1;
+        }
+    }
+
+    println!("\n\nTrue Positives: {}", true_positives);
+    println!("False Positives: {}", false_positives);
+    println!("False Negatives: {}", false_negatives);
+    println!("True Negatives: {}", true_negatives);
 }
 
 struct Prompt {
