@@ -98,29 +98,104 @@ impl ValidatedResponse {
             components,
         };
 
-        myself.remove_unused_components();
+        // if myself.remove_unused_components() {
+        //     return None;
+        // }
 
-        if myself. components.is_empty() {
+        if myself.contains_hallucinated_components() {
+            return None;
+        }
+
+        if myself.components.is_empty() {
             return None;
         }
 
         Some(myself)
     }
 
-    fn remove_unused_components(&mut self) {
+    // Check if there are any hallucinated components
+    fn contains_hallucinated_components(&mut self) -> bool {
+        for html in self.html_iterator() {
+            let without_whitespace = html
+                .chars()
+                .filter(|c| !c.is_whitespace())
+                .collect::<String>();
+
+            let mut in_element_like = false;
+            let mut last_char_was_open = false;
+            let mut building_component_name = false;
+            let mut component_name = String::new();
+            for c in without_whitespace.chars() {
+                if c.is_whitespace() {
+                    continue;
+                }
+
+                if c.is_ascii_uppercase() && last_char_was_open {
+                    building_component_name = true;
+                }
+
+                if c == '<' {
+                    in_element_like = true;
+                } else if c == '/' || c == '>' {
+                    in_element_like = false;
+                    if building_component_name {
+                        let component_name_trimmed = component_name.trim();
+                        if component_name_trimmed.is_empty() {
+                            return true;
+                        }
+
+                        let component_exists = self
+                            .components
+                            .iter()
+                            .any(|x| x.name.trim() == component_name_trimmed);
+                        if !component_exists {
+                            return true;
+                        }
+
+                        component_name.clear();
+                        building_component_name = false;
+                    }
+                } else if building_component_name {
+                    component_name.push(c);
+                }
+
+                last_char_was_open = c == '<';
+            }
+        }
+
+        false
+    }
+
+    // Returns true if the response is invalid
+    fn remove_unused_components(&mut self) -> bool {
         let mut used_components = Vec::new();
         for (i, component) in self.components.iter().enumerate() {
             let start_jsx = format!("<{}>", component.name);
             let end_jsx = format!("</{}>", component.name);
+            let self_closing_jsx = format!("<{}/>", component.name);
             let mut used = false;
             for html in self.html_iterator() {
                 let without_whitespace = html
                     .chars()
                     .filter(|c| !c.is_whitespace())
                     .collect::<String>();
-                let contains_component = (component.is_standalone
-                    || without_whitespace.contains(&start_jsx))
-                    && without_whitespace.contains(&end_jsx);
+                let contains_component = if component.is_standalone {
+                    // If this is standalone, only allow self closing tags
+                    if without_whitespace.contains(&start_jsx)
+                        || without_whitespace.contains(&end_jsx)
+                    {
+                        return true;
+                    }
+                    without_whitespace.contains(&self_closing_jsx)
+                } else {
+                    // If this is not standalone, allow only a matching number of start and end tags
+                    let contains_start = without_whitespace.matches(&start_jsx).count();
+                    let contains_end = without_whitespace.matches(&end_jsx).count();
+                    if contains_start != contains_end {
+                        return true;
+                    }
+                    contains_start > 0
+                };
                 if contains_component {
                     used = true;
                     break;
@@ -143,6 +218,8 @@ impl ValidatedResponse {
                 }
             }
         }
+
+        false
     }
 
     fn html_iterator(&self) -> impl Iterator<Item = &str> {
