@@ -483,9 +483,6 @@ pub const UI_COMPONENTS: &[&str] = &[
     "YouTube/Vimeo Embeds",
     "Zoom/Magnify Effects",
     "Z-Index/Stacking Contexts",
-];
-
-pub const UI_COMPONENTS_2: &[&str] = &[
     "Header Navigation Bar",
     "Footer Copyright Text",
     "Hero Background Image",
