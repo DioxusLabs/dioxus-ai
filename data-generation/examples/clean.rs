@@ -75,16 +75,26 @@ fn main() {
         println!("{}", component.html);
     }
 
+    // Write the deduplicated data to a file
     let mut csv_writer = csv::Writer::from_path("data.csv").unwrap();
-    for (prompt, mut validated_responses) in combined {
+    for (prompt, mut validated_responses) in combined.clone() {
         let validated_response = validated_responses.pop().unwrap();
         let training_example = TrainingExample::new(prompt.to_string(), validated_response);
         csv_writer.serialize(training_example).unwrap();
     }
+
+    // Write the full duplicated data to a file
+    let mut csv_writer = csv::Writer::from_path("duplicated.csv").unwrap();
+    for (prompt, validated_responses) in combined {
+        for validated_response in validated_responses {
+            let training_example = TrainingExample::new(prompt.to_string(), validated_response);
+            csv_writer.serialize(training_example).unwrap();
+        }
+    }
 }
 
 // A normalized, validated training example
-#[derive(serde::Serialize, serde::Deserialize, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 struct TrainingExample {
     pub input: String,
     pub output: String,
@@ -158,7 +168,7 @@ fn normalize_html(html: &str) -> String {
     output.trim().replace("className", "class")
 }
 
-#[derive(serde::Deserialize, serde::Serialize, Debug)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 struct ValidatedResponse {
     description: String,
     html: String,
@@ -313,7 +323,7 @@ impl ValidatedResponse {
     }
 }
 
-#[derive(serde::Deserialize, serde::Serialize, Debug)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 struct Component {
     name: String,
     is_standalone: bool,

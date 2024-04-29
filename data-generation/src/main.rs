@@ -102,7 +102,7 @@ async fn main() {
             _ = iter.next();
             data_count += 1;
 
-            if data_count % 100 == 0 {
+            if data_count % 10 == 0 {
                 // write the data into a file
                 let timestamp = std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)
