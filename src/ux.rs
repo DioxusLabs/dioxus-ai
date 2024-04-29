@@ -1,5 +1,5 @@
 use kalosm::language::*;
-use std::{fmt::Display, io::Write, ops::DerefMut};
+use std::{fmt::Display, io::Write};
 
 use crate::pretty_print::get_clean_html;
 

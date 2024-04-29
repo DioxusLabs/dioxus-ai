@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::io::Read;
 
 use data_gen::Train;
@@ -30,9 +31,9 @@ fn main() {
                 return None;
             }
 
-            ParsedResponse::new(content)
+            Some((x.prompt, ParsedResponse::new(content)?))
         })
-        .collect::<Vec<ParsedResponse>>();
+        .collect::<Vec<(String, ParsedResponse)>>();
     println!("filtered: {}", filtered.len());
 
     let mut file = std::fs::File::create("filtered.json").unwrap();
@@ -40,12 +41,19 @@ fn main() {
 
     let validated = filtered
         .into_iter()
-        .filter_map(ValidatedResponse::from_parsed_response)
-        .collect::<Vec<ValidatedResponse>>();
+        .filter_map(|(prompt, parsed_response)| Some((prompt, ValidatedResponse::from_parsed_response(parsed_response)?)))
+        .collect::<Vec<(String, ValidatedResponse)>>();
     println!("validated: {}", validated.len());
 
+    let mut combined = HashMap::new();
+    for (prompt, validated_response) in validated {
+        combined.entry(prompt).or_insert(Vec::new()).push(validated_response);
+    }
+
+    println!("combined: {}", combined.len());
+
     let mut file = std::fs::File::create("validated.json").unwrap();
-    serde_json::to_writer_pretty(&mut file, &validated).unwrap();
+    serde_json::to_writer_pretty(&mut file, &combined).unwrap();
 }
 
 const QUESTIONS: &[&str] = &[
