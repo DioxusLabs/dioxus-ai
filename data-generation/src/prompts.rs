@@ -1,3 +1,6 @@
+use once_cell::sync::Lazy;
+use std::collections::HashSet;
+
 pub const PROMPT: &str = r#"You generate snippets of JSX. You will only use tailwindcss for styling. You may include comments to explain the HTML with the `<!-- comment -->` syntax.
 
 The UI should be:
@@ -24,7 +27,18 @@ You always follow this response format:
 For any information you don't know in the HTML. Use `{lower_camel_case_identifier}` in the HTML instead of the information. The information must be a string or number only.
 For example, if you don't know how many downloads a library has, you might put <p>{download_count} downloads</p> in the HTML."#;
 
-pub const UI_COMPONENTS: &[&str] = &[
+pub static UI_COMPONENTS: Lazy<Vec<&str>> = Lazy::new(|| {
+    let mut components: HashSet<&'static str> = UI_COMPONENTS_RAW.iter().copied().collect();
+    let file = std::fs::File::open("finished_prompts.json").unwrap();
+    let finished_prompts: Vec<String> = serde_json::from_reader(file).unwrap();
+    let finished_prompts: HashSet<&str> = finished_prompts.iter().map(|x| x.as_str()).collect();
+    for component in finished_prompts {
+        components.remove(&*component);
+    }
+    components.into_iter().collect()
+});
+
+const UI_COMPONENTS_RAW: &[&str] = &[
     "Horizontal strip displaying links to key sections of the website",
     "Text input field for users to search within the website",
     "Graphic symbol representing the brand or website, usually clickable",

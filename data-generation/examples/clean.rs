@@ -75,6 +75,10 @@ fn main() {
         println!("{}", component.html);
     }
 
+    // Write the finished prompts to a file
+    let mut file = std::fs::File::create("finished_prompts.json").unwrap();
+    serde_json::to_writer_pretty(&mut file, &combined.keys().collect::<Vec<_>>()).unwrap();
+
     // Write the deduplicated data to a file
     let mut csv_writer = csv::Writer::from_path("data.csv").unwrap();
     for (prompt, mut validated_responses) in combined.clone() {
