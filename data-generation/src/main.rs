@@ -114,6 +114,7 @@ async fn main() {
                 let mut file = File::create(file).await.unwrap();
                 let json = serde_json::to_string(&responses).unwrap();
                 file.write_all(json.as_bytes()).await.unwrap();
+                responses.clear();
             }
         }
     }

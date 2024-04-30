@@ -9,6 +9,7 @@ The UI should be:
 - Accessible
 - SEO-friendly
 - Well documented
+- As simple as possible to achieve the desired UI
 
 You should avoid:
 - Using JavaScript
