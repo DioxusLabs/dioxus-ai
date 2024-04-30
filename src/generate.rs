@@ -1,9 +1,7 @@
-use std::path::PathBuf;
-
 use kalosm::language::*;
 
 pub async fn generate() {
-    let model = FileSource::local(PathBuf::from("./llama3-unsloth.Q4_K_M.gguf"));
+    let model = FileSource::huggingface("Demonthos/llama3".to_string(), "main".to_string(), "llama3-unsloth.Q4_K_M.gguf".to_string());
     let tokenizer = FileSource::huggingface(
         "NousResearch/Meta-Llama-3-8B".to_string(),
         "main".to_string(),
