@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::io::Read;
 
 use data_gen::Train;
@@ -90,15 +91,19 @@ fn main() {
     // Write the full duplicated data to a file
     let mut csv_writer = csv::Writer::from_path("duplicated.csv").unwrap();
     for (prompt, validated_responses) in combined {
+        let mut examples = HashSet::new();
         for validated_response in validated_responses {
             let training_example = TrainingExample::new(prompt.to_string(), validated_response);
-            csv_writer.serialize(training_example).unwrap();
+            examples.insert(training_example);
+        }
+        for example in examples {
+            csv_writer.serialize(example).unwrap();
         }
     }
 }
 
 // A normalized, validated training example
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Hash, PartialEq, Eq)]
 struct TrainingExample {
     pub input: String,
     pub output: String,
