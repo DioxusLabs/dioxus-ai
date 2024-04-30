@@ -3,43 +3,25 @@ use serde::{Deserialize, Serialize};
 mod prompts;
 pub use prompts::*;
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Eq, Hash, PartialEq)]
 pub struct Train {
     pub prompt: String,
     pub response: Chat,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Eq, Hash, PartialEq)]
 pub struct Chat {
-    #[serde(default)]
-    pub id: String,
-    #[serde(default)]
-    pub object: String,
-    #[serde(default)]
-    pub created: f64,
     #[serde(default)]
     pub model: String,
     pub choices: Vec<Choice>,
-    #[serde(default)]
-    pub usage: Usage,
-    #[serde(default)]
-    pub system_fingerprint: String,
-    #[serde(default)]
-    pub x_groq: XGroq,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Eq, Hash, PartialEq)]
 pub struct Choice {
-    #[serde(default)]
-    pub index: usize,
     pub message: Message,
-    #[serde(default)]
-    pub finish_reason: String,
-    #[serde(default)]
-    pub logprobs: Option<Logprobs>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Eq, Hash, PartialEq)]
 pub struct Message {
     pub role: String,
     pub content: String,

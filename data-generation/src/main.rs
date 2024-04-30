@@ -35,7 +35,8 @@ async fn main() {
                             "content": component
                         }
                     ],
-                    "model": "llama3-70b-8192"
+                    "model": "llama3-70b-8192",
+                    "seed": rand::random::<u64>()
                 }))
                 .send()
                 .await

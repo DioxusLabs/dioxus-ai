@@ -5,7 +5,7 @@ use std::io::Read;
 use data_gen::Train;
 
 fn main() {
-    let mut deserialized = Vec::new();
+    let mut deserialized = HashSet::new();
     // Read all files in the data folder
     let files = std::fs::read_dir("data").unwrap();
     for file in files.flatten() {

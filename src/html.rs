@@ -3,7 +3,6 @@
 // HTML is not a regular language, so it is not possible to correctly parse it with a regular expression
 
 use const_format::concatcp;
-use kalosm::language::{CreateParserState, Parser, RegexParser};
 
 const ELEMENT_NAME_REGEX: &str = r#"[a-z]+"#;
 const ATTRIBUTE_REGEX: &str = r#" [a-zA-Z]+="[^"]+""#;
