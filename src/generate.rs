@@ -104,6 +104,7 @@ impl PartialState {
         };
 
         if let Some(next_section) = self.current_section.next_section() {
+            #[allow(clippy::single_match)]
             match next_section {
                 Section::Components => {
                     println!("I think I will need components for this...");
