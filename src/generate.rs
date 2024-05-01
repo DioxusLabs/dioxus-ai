@@ -1,6 +1,7 @@
 use core::panic;
 use dioxus_autofmt::write_block_out;
 use kalosm::language::*;
+use regex::Regex;
 use rsx_rosetta::{rsx_from_html, Dom};
 use std::io::Write;
 use syntect::easy::HighlightLines;
@@ -95,7 +96,7 @@ impl PartialState {
                     let nodes = Dom::parse(&component.html).unwrap();
                     let rsx = rsx_from_html(&nodes);
                     if let Some(block) = write_block_out(rsx) {
-                        print_rsx(&block);
+                        print_component(&component.name, &component.description, &block);
                     }
                 }
             }
@@ -163,7 +164,10 @@ impl PartialState {
                 match self.current_component_index {
                     Some(index) => {
                         // Only keep the HTML up to the end of the text
-                        let html = html.split_once("<|end_of_text|>").map(|x| x.0).unwrap_or(&html);
+                        let html = html
+                            .split_once("<|end_of_text|>")
+                            .map(|x| x.0)
+                            .unwrap_or(&html);
                         self.components[index].html = html.to_string();
                         self.current_component_index = None;
                     }
@@ -230,6 +234,65 @@ impl Section {
             Section::ComponentHTML => None,
         }
     }
+}
+
+fn print_component(name: &str, description: &str, rsx: &str) {
+    // Find any parameters for the function
+    // Find all occurrences of {parameter} inside a string
+    let re = Regex::new(r#""[^"]*\{([a-z_]+)\}[^"]*"#).unwrap();
+    let mut parameters = Vec::new();
+    for cap in re.captures_iter(rsx) {
+        parameters.push(cap.get(1).unwrap().as_str().to_string());
+    }
+
+    // Replace all occurrences of "{children}" with {children}
+    let children_regex = Regex::new(r#""\{\s*children\s*\}""#).unwrap();
+    let rsx = children_regex.replace_all(rsx, "{children}").to_string();
+
+    println!("\n");
+
+    let mut component_string = String::new();
+    // Print the docstring
+    component_string += &format!("/// {}", description);
+    component_string += "\n#[component]";
+
+    // Print the function signature
+    component_string += &format!("\nfn {}(", name);
+    for (i, parameter) in parameters.iter().enumerate() {
+        if parameter == "children" {
+            component_string += "children: Element";
+        } else {
+            component_string += &format!("{parameter}: String");
+        }
+        if i < parameters.len() - 1 {
+            component_string += ", ";
+        }
+    }
+    component_string += ") -> Element {\n";
+    component_string += "    rsx! {";
+    // Add an extra level of indentation to the RSX
+    let rsx = rsx
+        .lines()
+        .map(|line| "    ".to_string() + line)
+        .collect::<Vec<String>>()
+        .join("\n");
+    component_string += &rsx;
+    component_string += "\n    }\n}";
+
+    // Load these once at the start of your program
+    let ps = SyntaxSet::load_defaults_newlines();
+    let ts = ThemeSet::load_defaults();
+
+    let syntax = ps.find_syntax_by_extension("rs").unwrap();
+    let mut h = HighlightLines::new(syntax, &ts.themes["base16-ocean.dark"]);
+    for line in LinesWithEndings::from(&component_string) {
+        let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
+        let escaped = as_24_bit_terminal_escaped(&ranges[..], true);
+        print!("{}", escaped);
+    }
+
+    println!("\x1b[0m");
+    println!("\n");
 }
 
 fn print_rsx(rsx: &str) {

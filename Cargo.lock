@@ -1393,6 +1393,7 @@ dependencies = [
  "enumset",
  "im",
  "kalosm",
+ "regex",
  "rsx-rosetta",
  "scraper 0.19.0",
  "syntect",

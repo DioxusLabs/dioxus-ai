@@ -16,6 +16,7 @@ const_format = "0.2.32"
 rsx-rosetta = "0.5.1"
 dioxus-autofmt = "0.5.1"
 syntect = "5.2.0"
+regex = "1.10.4"
 
 [features]
 default = ["metal"]
