@@ -1,4 +1,5 @@
 use core::panic;
+use std::io::Write;
 use dioxus_autofmt::write_block_out;
 use kalosm::language::*;
 use rsx_rosetta::{rsx_from_html, Dom};
@@ -99,15 +100,17 @@ impl PartialState {
             Section::Description => {
                 println!("Thinking about UI...");
             }
-            Section::Components => {
-                println!("I think I will need components for this...");
-                for component in self.components.iter() {
-                    println!("- {} ({})", component.name, component.description);
-                }
-            }
+            Section::Components => {}
         };
 
         if let Some(next_section) = self.current_section.next_section() {
+            match next_section {
+                Section::Components => {
+                    println!("I think I will need components for this...");
+                },
+                _ => {}
+            }
+
             self.current_section = next_section;
         }
     }
@@ -130,6 +133,8 @@ impl PartialState {
         match self.current_section {
             Section::Description => {
                 self.description.push_str(line);
+                print!("{}", line);
+                std::io::stdout().flush().unwrap();
             }
             Section::Components => {
                 let (before_colon, after_colon) = line.trim().split_once(':').unwrap();
@@ -144,6 +149,7 @@ impl PartialState {
                     description,
                     html: String::new(),
                 };
+                println!("- {} ({})", component.name, component.description);
                 self.components.push(component);
             }
             Section::HTML => {
@@ -235,7 +241,7 @@ fn print_rsx(rsx: &str) {
     let ps = SyntaxSet::load_defaults_newlines();
     let ts = ThemeSet::load_defaults();
 
-    let syntax = ps.find_syntax_by_extension("html").unwrap();
+    let syntax = ps.find_syntax_by_extension("rs").unwrap();
     let mut h = HighlightLines::new(syntax, &ts.themes["base16-ocean.dark"]);
     for line in LinesWithEndings::from(&rsx) {
         let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
