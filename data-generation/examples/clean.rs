@@ -20,10 +20,6 @@ fn main() {
         }
     }
 
-    // Write out the deduplicated data
-    let mut file = std::fs::File::create("deduplicated_raw.json").unwrap();
-    serde_json::to_writer_pretty(&mut file, &deserialized).unwrap();
-
     println!("deserialized: {}", deserialized.len());
 
     let filtered = deserialized

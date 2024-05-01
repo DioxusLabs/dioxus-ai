@@ -18,11 +18,11 @@ async fn main() {
             let component = component.trim();
             println!("Generating for {}", component);
 
-            let groq_key = std::env::var("GROQ_KEY").unwrap();
+            let key = std::env::var("GROQ_KEY").unwrap();
 
             let Ok(res) = client
                 .post("https://api.groq.com/openai/v1/chat/completions")
-                .header("Authorization", format!("Bearer {groq_key}"))
+                .header("Authorization", format!("Bearer {key}"))
                 .header("Content-Type", "application/json")
                 .json(&serde_json::json!({
                     "messages": [
