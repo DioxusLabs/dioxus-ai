@@ -1,12 +1,14 @@
 use core::panic;
-use std::io::Write;
 use dioxus_autofmt::write_block_out;
 use kalosm::language::*;
 use rsx_rosetta::{rsx_from_html, Dom};
+use std::io::Write;
 use syntect::easy::HighlightLines;
 use syntect::highlighting::{Style, ThemeSet};
 use syntect::parsing::SyntaxSet;
 use syntect::util::{as_24_bit_terminal_escaped, LinesWithEndings};
+
+const REGEX_CONSTRAINTS: &str = r#"[^\n]+\nCOMPONENTS:\n(- [A-Z][a-z]\w+: [\w\d\.\- ]+\n)+HTML:\n[^\n]+\nCOMPONENT HTML:(\n[A-Z][a-z]\w+:\n[^\n]+)+<\|end_of_text\|>"#;
 
 pub async fn generate() {
     let model = FileSource::huggingface(
@@ -26,12 +28,12 @@ pub async fn generate() {
         .unwrap();
 
     loop {
+        let constraints = RegexParser::new(REGEX_CONSTRAINTS).unwrap();
         let input = prompt_input("What do you want to make? ").unwrap();
         let prompt = input + "\nDESCRIPTION:\n";
         let start_timestamp = std::time::Instant::now();
         let mut stream = llm
-            .stream_text(&prompt)
-            .with_max_length(2048) // TODO: Make this configurable
+            .stream_structured_text(&prompt, constraints)
             .await
             .unwrap();
 
@@ -108,7 +110,7 @@ impl PartialState {
             match next_section {
                 Section::Components => {
                     println!("I think I will need components for this...");
-                },
+                }
                 _ => {}
             }
 
@@ -160,7 +162,9 @@ impl PartialState {
                 let html = line.trim().to_string();
                 match self.current_component_index {
                     Some(index) => {
-                        self.components[index].html = html;
+                        // Only keep the HTML up to the end of the text
+                        let html = html.split_once("<|end_of_text|>").map(|x| x.0).unwrap_or(&html);
+                        self.components[index].html = html.to_string();
                         self.current_component_index = None;
                     }
                     None => {
@@ -175,8 +179,8 @@ impl PartialState {
                             .position(|x| x.name.to_lowercase().trim() == trimmed_line)
                             .unwrap_or_else(|| {
                                 panic!(
-                                    "Component not found: {} in {:?}",
-                                    trimmed_line,
+                                    "Component {} not found in {:?}",
+                                    line,
                                     self.components
                                         .iter()
                                         .map(|x| x.name.to_lowercase())
