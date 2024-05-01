@@ -98,7 +98,7 @@ impl PartialState {
                 }
             }
             Section::Description => {
-                println!("Thinking about UI...");
+                println!("\nThinking about UI...");
             }
             Section::Components => {}
         };
