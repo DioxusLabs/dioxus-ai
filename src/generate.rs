@@ -1,4 +1,5 @@
 use core::panic;
+use std::collections::HashSet;
 use dioxus_autofmt::write_block_out;
 use kalosm::language::*;
 use regex::Regex;
@@ -240,9 +241,9 @@ fn print_component(name: &str, description: &str, rsx: &str) {
     // Find any parameters for the function
     // Find all occurrences of {parameter} inside a string
     let re = Regex::new(r#""[^"]*\{([a-z_]+)\}[^"]*"#).unwrap();
-    let mut parameters = Vec::new();
+    let mut parameters = HashSet::new();
     for cap in re.captures_iter(rsx) {
-        parameters.push(cap.get(1).unwrap().as_str().to_string());
+        parameters.insert(cap.get(1).unwrap().as_str().to_string());
     }
 
     // Replace all occurrences of "{children}" with {children}
