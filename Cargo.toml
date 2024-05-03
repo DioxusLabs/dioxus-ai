@@ -13,8 +13,8 @@ zstd-sys = "=2.0.9"
 im = "15.1.0"
 enumset = "1.1.3"
 const_format = "0.2.32"
-rsx-rosetta = "0.5.1"
-dioxus-autofmt = "0.5.1"
+rsx-rosetta = { git = "https://github.com/DioxusLabs/dioxus", branch = "jk/jsx-to-rsx" }
+dioxus-autofmt = { git = "https://github.com/DioxusLabs/dioxus", branch = "jk/jsx-to-rsx" }
 syntect = "5.2.0"
 regex = "1.10.4"
 

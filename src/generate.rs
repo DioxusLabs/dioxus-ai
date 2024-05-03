@@ -84,16 +84,15 @@ impl PartialState {
         // Finish the current section
         match self.current_section {
             Section::HTML => {
-                print!("HTML:");
+                println!("Finished creating HTML for {}", self.description);
+            }
+            Section::ComponentHTML => {
                 let nodes = Dom::parse(&self.html).unwrap();
                 let rsx = rsx_from_html(&nodes);
                 if let Some(block) = write_block_out(rsx) {
-                    print_rsx(&block);
+                    print_component("app", "", &block);
                 }
-            }
-            Section::ComponentHTML => {
                 for component in self.components.iter() {
-                    print!("{} ({})", component.name, component.description);
                     let nodes = Dom::parse(&component.html).unwrap();
                     let rsx = rsx_from_html(&nodes);
                     if let Some(block) = write_block_out(rsx) {
@@ -254,7 +253,9 @@ fn print_component(name: &str, description: &str, rsx: &str) {
 
     let mut component_string = String::new();
     // Print the docstring
-    component_string += &format!("/// {}", description);
+    if !description.trim().is_empty() {
+        component_string += &format!("/// {}", description);
+    }
     component_string += "\n#[component]";
 
     // Print the function signature
@@ -292,31 +293,6 @@ fn print_component(name: &str, description: &str, rsx: &str) {
         print!("{}", escaped);
     }
 
-    println!("\x1b[0m");
-    println!("\n");
-}
-
-fn print_rsx(rsx: &str) {
-    // First trim the indentation
-    let rsx = rsx
-        .lines()
-        .map(|line| line.strip_prefix("    ").unwrap_or(line))
-        .collect::<Vec<&str>>()
-        .join("\n");
-
-    println!("\n");
-
-    // Load these once at the start of your program
-    let ps = SyntaxSet::load_defaults_newlines();
-    let ts = ThemeSet::load_defaults();
-
-    let syntax = ps.find_syntax_by_extension("rs").unwrap();
-    let mut h = HighlightLines::new(syntax, &ts.themes["base16-ocean.dark"]);
-    for line in LinesWithEndings::from(&rsx) {
-        let ranges: Vec<(Style, &str)> = h.highlight_line(line, &ps).unwrap();
-        let escaped = as_24_bit_terminal_escaped(&ranges[..], true);
-        print!("{}", escaped);
-    }
     println!("\x1b[0m");
     println!("\n");
 }

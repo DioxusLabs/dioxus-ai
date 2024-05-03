@@ -7,7 +7,8 @@ use data_gen::Train;
 fn main() {
     let mut deserialized = HashSet::new();
     // Read all files in the data folder
-    let files = std::fs::read_dir("data").unwrap();
+    let files = std::fs::read_dir("components-data").unwrap();
+    // let files = std::fs::read_dir("data").unwrap();
     for file in files.flatten() {
         if file.path().is_file() && file.path().extension() == Some(std::ffi::OsStr::new("json")) {
             let path = file.path();
@@ -143,11 +144,57 @@ COMPONENT HTML:
     }
 }
 
-const QUESTIONS: &[&str] = &[
-    "what should the ui look like?",
-    "what are the individual components that make up the ui?",
-    "what does the html for the ui look like?",
-    "what is the html for each component?",
+const QUESTIONS: &[fn(&str) -> bool] = &[
+    |s| s.to_lowercase().contains("the ui look like?"),
+    |s| {
+        s.to_lowercase()
+            .contains("the individual components that make up the ui?")
+    },
+    |s| {
+        let lower = s.to_lowercase();
+        lower.contains("the html for the ui look like?")
+            || lower.contains("the html for top level ui look like?")
+    },
+    |s| s.to_lowercase().contains("the html for each component?"),
+];
+
+fn starts_with_number(s: &str, number: usize, deliminator: &str) -> bool {
+    let number_str = format!("{number}{deliminator}");
+    let cleaned = s
+        .chars()
+        .filter(|c| !c.is_whitespace() && *c != '*' && *c != '-' && *c != '#')
+        .collect::<String>();
+    cleaned.starts_with(&number_str)
+}
+
+#[derive(serde::Deserialize, serde::Serialize, Debug, PartialEq, Copy, Clone)]
+enum SectionStart {
+    Bold,
+    Heading,
+    EndsWithColon,
+}
+
+impl SectionStart {
+    const ALL: &'static [Self] = &[
+        SectionStart::Bold,
+        SectionStart::Heading,
+        SectionStart::EndsWithColon,
+    ];
+
+    fn starts_with(self, s: &str) -> bool {
+        match self {
+            SectionStart::Bold => s.starts_with("**"),
+            SectionStart::Heading => s.starts_with("#"),
+            SectionStart::EndsWithColon => s.ends_with(":"),
+        }
+    }
+}
+
+const ANSWERS: &[fn(&str) -> bool] = &[
+    |s| (s.contains("ui") || s.contains("design")),
+    |s| s.contains("component"),
+    |s| (s.contains("html") || s.contains("ui") || s.contains("top")),
+    |s| (s.contains("html") || s.contains("component")),
 ];
 
 fn normalize_html(html: &str) -> String {
@@ -174,7 +221,78 @@ fn normalize_html(html: &str) -> String {
         }
     }
 
-    output.trim().replace("className", "class")
+    // Turn style={{ attribute: `value`, ... }} into style="attribute: value; ..."
+    let mut search_start = 0;
+    const STYLE: &str = "style=";
+    while let Some(match_start) = output[search_start..].find(STYLE) {
+        let match_start = match_start + search_start;
+        let start = match_start + STYLE.len();
+        // Find the start of the style attribute
+        let Some(next_non_whitespace) = output[start..].char_indices().find_map(|(i, c)| {
+            if !c.is_whitespace() {
+                Some(i)
+            } else {
+                None
+            }
+        })
+        else {
+            search_start = start + 1;
+            continue;
+        };
+        let first_char = output[start + next_non_whitespace..].chars().next().unwrap();
+        // If the first character is not a '{', skip this style attribute. We don't need to transform it.
+        if first_char != '{' {
+            search_start = start + 1;
+            continue;
+        }
+
+        // Find the end of the style attribute
+        let mut depth = 0;
+        let mut end = None;
+        for (i, c) in output[start..].char_indices() {
+            if c == '{' {
+                depth += 1;
+            } else if c == '}' {
+                depth -= 1;
+            }
+            if depth == 0 {
+                end = Some(start + i);
+                break;
+            }
+        }
+        let Some(end) = end else {
+            search_start = start + 1;
+            continue;
+        };
+
+        let inside_braces = &output[start + next_non_whitespace..end].trim_matches('{').trim_matches('}');
+        let attributes = inside_braces.split(',').map(|x| x.trim());
+        let mut style = String::from("style=\"");
+        for attribute in attributes {
+            let Some((key, value)) = attribute.split_once(':') else {
+                continue;
+            };
+            style.push_str(key);
+            style.push_str(": ");
+            style.push_str(value.trim_matches(|c| matches!(c, '"' | '\'' | '`' | ';' | ' ')));
+            style.push_str("; ");
+        }
+        if style.ends_with("; ") {
+            style.pop();
+        }
+        style.push('"');
+
+        output.replace_range(match_start..end, &style);
+        search_start = match_start + style.len();
+    }
+
+    output
+        .trim()
+        .replace("className", "class")
+        .replace("${{", "{")
+        .replace("{{", "{")
+        .replace("}}", "}")
+        .replace("${", "{")
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
@@ -190,12 +308,22 @@ impl ValidatedResponse {
         let description = parsed_response.description.trim().to_string();
         let html = normalize_html(&parsed_response.main_html);
 
-        for (description, html) in parsed_response
-            .component_list
+        let mut component_html: HashMap<String, ComponentHtml> = parsed_response
+            .component_html
             .into_iter()
-            .zip(parsed_response.component_html)
-        {
-            components.push(Component::new(description, html)?);
+            .map(|html| (html.name.trim().to_lowercase().to_string(), html))
+            .collect();
+        for description in parsed_response.component_list {
+            // Try to find the HTML for the component
+            match component_html.remove(&description.name.trim().to_lowercase()) {
+                Some(html) => components.push(Component::new(description, html)?),
+                None => return None,
+            }
+        }
+
+        // There was HTML for components that don't exist in the component list
+        if !component_html.is_empty() {
+            return None;
         }
 
         let mut myself = ValidatedResponse {
@@ -428,37 +556,73 @@ impl ParsedResponse {
     }
 }
 
-#[derive(serde::Deserialize, serde::Serialize, Debug)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, PartialEq)]
 enum SplitStrategy {
     // Split the prompt at #)
-    NumberParen,
+    NumberParen { bold: bool },
     // Split the prompt at #.
-    NumberDot,
+    NumberDot { bold: bool },
     // Split the prompt at each question
     Question,
+    Answer { section_start: SectionStart },
 }
 
 impl SplitStrategy {
     fn detect(prompt: &str) -> Option<Self> {
         let as_lower = prompt.to_lowercase();
 
-        let has_all_questions = QUESTIONS.iter().all(|q| as_lower.contains(q));
+        let has_all_questions = QUESTIONS.iter().all(|q| as_lower.lines().any(|l| q(l)));
         if has_all_questions {
             return Some(SplitStrategy::Question);
         }
 
-        let paren_match_count: usize = (1..QUESTIONS.len())
-            .map(|i| as_lower.matches(&format!("{})", i)).count())
-            .sum();
-        if paren_match_count == QUESTIONS.len() {
-            return Some(SplitStrategy::NumberParen);
+        // Try to find answer lines in order
+        for section_start in SectionStart::ALL {
+            let mut answers_iter = ANSWERS.iter().enumerate().peekable();
+            let lines_iter = prompt.lines();
+            for line in lines_iter {
+                if let Some(&(i, answer)) = answers_iter.peek() {
+                    let lower = line.to_lowercase();
+                    if section_start.starts_with(&lower) {
+                        if answer(&lower) {
+                            answers_iter.next();
+                            if i == QUESTIONS.len() - 1 {
+                                return Some(SplitStrategy::Answer {
+                                    section_start: *section_start,
+                                });
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        let dot_match_count: usize = (1..QUESTIONS.len())
-            .map(|i| as_lower.matches(&format!("{}.", i)).count())
-            .sum();
-        if dot_match_count == QUESTIONS.len() {
-            return Some(SplitStrategy::NumberDot);
+        for bold in [true, false] {
+            let bold_match_count: usize = (1..QUESTIONS.len() + 1)
+                .map(|i| {
+                    as_lower
+                        .lines()
+                        .filter(|l| starts_with_number(l, i, ")") && (!bold || l.contains("**")))
+                        .count()
+                })
+                .sum();
+            if bold_match_count == QUESTIONS.len() {
+                return Some(SplitStrategy::NumberParen { bold });
+            }
+        }
+
+        for bold in [true, false] {
+            let dot_match_count: usize = (1..QUESTIONS.len() + 1)
+                .map(|i| {
+                    as_lower
+                        .lines()
+                        .filter(|l| starts_with_number(l, i, ".") && (!bold || l.contains("**")))
+                        .count()
+                })
+                .sum();
+            if dot_match_count == QUESTIONS.len() {
+                return Some(SplitStrategy::NumberDot { bold });
+            }
         }
 
         None
@@ -482,32 +646,32 @@ impl SplitStrategy {
         };
 
         match self {
-            SplitStrategy::NumberParen => {
+            SplitStrategy::NumberParen { bold } => {
                 let mut current_response_number = 1;
-                let mut needle = format!("{})", current_response_number);
                 for line in prompt.lines() {
-                    if line.to_lowercase().contains(&needle) {
+                    if starts_with_number(line, current_response_number, ")")
+                        && (!bold || line.contains("**"))
+                    {
                         if current_response_number == 1 {
                             current_response.clear();
                         }
                         current_response_number += 1;
-                        needle = format!("{})", current_response_number);
                         finish_response(&mut responses, &mut current_response);
                     } else {
                         add_line(&mut current_response, line);
                     }
                 }
             }
-            SplitStrategy::NumberDot => {
+            SplitStrategy::NumberDot { bold } => {
                 let mut current_response_number = 1;
-                let mut needle = format!("{}.", current_response_number);
                 for line in prompt.lines() {
-                    if line.to_lowercase().contains(&needle) {
+                    if starts_with_number(line, current_response_number, ".")
+                        && (!bold || line.contains("**"))
+                    {
                         if current_response_number == 1 {
                             current_response.clear();
                         }
                         current_response_number += 1;
-                        needle = format!("{}.", current_response_number);
                         finish_response(&mut responses, &mut current_response);
                     } else {
                         add_line(&mut current_response, line);
@@ -519,13 +683,34 @@ impl SplitStrategy {
                 let mut question_iter = QUESTIONS.iter().peekable();
                 for line in prompt.lines() {
                     if let Some(question) = question_iter.peek() {
-                        if line.to_lowercase().contains(**question) {
+                        if question(line) {
                             if before_question {
                                 current_response.clear();
                                 before_question = false;
                             }
                             finish_response(&mut responses, &mut current_response);
                             question_iter.next();
+                        } else {
+                            add_line(&mut current_response, line);
+                        }
+                    } else {
+                        add_line(&mut current_response, line);
+                    }
+                }
+            }
+            SplitStrategy::Answer { section_start } => {
+                let mut before_answer = true;
+                let mut answer_iter = ANSWERS.iter().peekable();
+                for line in prompt.lines() {
+                    if let Some(answer) = answer_iter.peek() {
+                        let lower = line.to_lowercase();
+                        if section_start.starts_with(&lower) && answer(&lower) {
+                            if before_answer {
+                                current_response.clear();
+                                before_answer = false;
+                            }
+                            finish_response(&mut responses, &mut current_response);
+                            answer_iter.next();
                         } else {
                             add_line(&mut current_response, line);
                         }
@@ -545,6 +730,33 @@ impl SplitStrategy {
 
         Some(responses.try_into().unwrap())
     }
+}
+
+#[test]
+fn detect_split_strategy() {
+    let prompt = "**1) stuff**\n**2) stuff**\n**3) stuff**\n\n**4) stuff**\n";
+    assert_eq!(
+        SplitStrategy::detect(prompt),
+        Some(SplitStrategy::NumberParen { bold: true })
+    );
+
+    let prompt = "1) stuff\n2) stuff\n3) stuff\n\n4) stuff\n";
+    assert_eq!(
+        SplitStrategy::detect(prompt),
+        Some(SplitStrategy::NumberParen { bold: false })
+    );
+
+    let prompt = "**1. stuff**\n**2. stuff**\n**3. stuff**\n\n**4. stuff**\n";
+    assert_eq!(
+        SplitStrategy::detect(prompt),
+        Some(SplitStrategy::NumberDot { bold: true })
+    );
+
+    let prompt = "1. stuff\n2. stuff\n3. stuff\n\n4. stuff\n";
+    assert_eq!(
+        SplitStrategy::detect(prompt),
+        Some(SplitStrategy::NumberDot { bold: false })
+    );
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
