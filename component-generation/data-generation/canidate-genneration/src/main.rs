@@ -109,7 +109,7 @@ async fn main() {
                     .duration_since(std::time::UNIX_EPOCH)
                     .unwrap()
                     .as_secs();
-                let folder = PathBuf::from("data");
+                let folder = PathBuf::from("../data");
                 let file = folder.join(format!("data{}.json", timestamp));
                 let mut file = File::create(file).await.unwrap();
                 let json = serde_json::to_string(&responses).unwrap();

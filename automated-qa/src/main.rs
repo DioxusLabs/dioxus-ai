@@ -1,18 +1,26 @@
-
 mod pretty_print;
 
 use kalosm::language::*;
 use std::{fmt::Display, io::Write};
+use tokio::sync::OnceCell;
 
 use crate::pretty_print::get_clean_html;
 
-#[tokio::main]
- async fn main() {
-    let llm = Llama::builder()
-        .with_source(LlamaSource::phi_3_mini_4k_instruct())
-        .build()
+async fn lazy_llama() -> anyhow::Result<&'static Llama> {
+    static INSTANCE: OnceCell<Llama> = OnceCell::const_new();
+
+    INSTANCE
+        .get_or_try_init(|| {
+            Llama::builder()
+                .with_source(LlamaSource::phi_3_mini_4k_instruct())
+                .build()
+        })
         .await
-        .unwrap();
+}
+
+#[tokio::main]
+async fn main() {
+    let llm = lazy_llama().await.unwrap();
 
     let background =
         "The dioxus homepage is a marketing site for an open source UI library called dioxus.";
@@ -110,7 +118,7 @@ You must respond with this format:
         println!("\nPROMPT (should be yes):\n{prompt}\n");
 
         let mut all_text = String::new();
-        let mut stream = task.run(&prompt.to_string(), &llm);
+        let mut stream = task.run(&prompt.to_string(), llm);
         while let Some(text) = stream.next().await {
             all_text.push_str(&text);
             print!("{text}");
@@ -128,7 +136,7 @@ You must respond with this format:
         println!("\nPROMPT (should be no):\n{prompt}\n");
 
         let mut all_text = String::new();
-        let mut stream = task.run(&prompt.to_string(), &llm);
+        let mut stream = task.run(&prompt.to_string(), llm);
         while let Some(text) = stream.next().await {
             all_text.push_str(&text);
             print!("{text}");

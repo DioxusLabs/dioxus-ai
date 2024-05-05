@@ -28,13 +28,13 @@ You always follow this response format:
 2) What are the individual components that make up the UI? Name each component with an upper camel case identifier and specify if the component is standalone or takes children. Describe what the component should look like on each screen size and the purpose of the component.
 3) What does the HTML for top level UI look like? Show the HTML for the top level UI in this format:
 ```html
-<-- HTML for the top level UI which should contain each component you described in step 2 -->
+<!-- HTML for the top level UI which should contain each component you described in step 2 -->
 ```
 4) What is the HTML for each component? Components may render child elements with the special `{children}` placeholder.
 Show each component in this format:
 - ComponentName (Standalone or Takes Children):
 ```html
-<-- HTML for the component -->
+<!-- HTML for the component -->
 ```
 
 For any information you don't know in the HTML. Use `{lower_camel_case_identifier}` in the HTML instead of the information. The information must be a string or number only.
@@ -42,7 +42,7 @@ For example, if you don't know how many downloads a library has, you might put <
 
 pub static UI_COMPONENTS: Lazy<Vec<&str>> = Lazy::new(|| {
     let mut components: HashSet<&'static str> = UI_COMPONENTS_RAW.iter().copied().collect();
-    let file = std::fs::File::open("finished_prompts.json").unwrap();
+    let file = std::fs::File::open("../finished_prompts.json").unwrap();
     let finished_prompts: Vec<String> = serde_json::from_reader(file).unwrap();
     let finished_prompts: HashSet<&str> = finished_prompts.iter().map(|x| x.as_str()).collect();
     for component in finished_prompts {

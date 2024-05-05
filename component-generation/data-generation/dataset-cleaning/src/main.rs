@@ -174,7 +174,7 @@ const ANSWERS: &[fn(&str) -> bool] = &[
     |s| (s.contains("html") || s.contains("component")),
 ];
 
-fn normalize_html(html: &str) -> String {
+fn normalize_html(html: &str) -> Option<String> {
     let mut output = String::new();
     let mut after_node_before_non_whitespace = true;
     for c in html.chars() {
@@ -267,15 +267,55 @@ fn normalize_html(html: &str) -> String {
         search_start = match_start + style.len();
     }
 
-    // Find svgs and images and replace them with a placeholder
+    // Find <svg> elements and replace them with a placeholder
+    {
+        let element = "svg";
+        let start_placeholder = "<svg>";
+        let end_placeholder = "</svg>";
+        let mut search_start = 0;
+        let element_start = format!("<{}", element);
+        let closing_tag = format!("</{}>", element);
+        while let Some(match_start) = output[search_start..].find(&element_start) {
+            let match_start = match_start + search_start;
+            let start = match_start + element_start.len();
+            // Find the end of the element (</element>)
+            let Some(end) = output[start..].find(&closing_tag) else {
+                search_start = start + 1;
+                continue;
+            };
+            let end = start + end + closing_tag.len();
 
-    output
+            let inside = &output[start..end - end_placeholder.len()];
+            let inside = inside.trim();
+            // Find the first comment
+            let comment = if let (Some(comment_start), Some(comment_end)) =
+                (inside.find("<!--"), inside.find("-->"))
+            {
+                let comment_start = comment_start + 4;
+                &inside[comment_start..comment_end]
+            } else {
+                ""
+            };
+
+            let placeholder = if comment.is_empty() {
+                return None;
+            } else {
+                start_placeholder.to_string() + "<!--" + comment + "-->" + end_placeholder
+            };
+
+            // replace the element with a placeholder
+            output.replace_range(match_start..end, &placeholder);
+            search_start = match_start + placeholder.len();
+        }
+    }
+
+    Some(output
         .trim()
         .replace("className", "class")
         .replace("${{", "{")
         .replace("{{", "{")
         .replace("}}", "}")
-        .replace("${", "{")
+        .replace("${", "{"))
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
@@ -289,7 +329,7 @@ impl ValidatedResponse {
     fn from_parsed_response(parsed_response: ParsedResponse) -> Option<Self> {
         let mut components = Vec::new();
         let description = parsed_response.description.trim().to_string();
-        let html = normalize_html(&parsed_response.main_html);
+        let html = normalize_html(&parsed_response.main_html)?;
 
         let mut component_html: HashMap<String, ComponentHtml> = parsed_response
             .component_html
@@ -462,7 +502,7 @@ impl Component {
         let is_standalone = description.is_standalone;
 
         let description = description.description.trim().to_string();
-        let html = normalize_html(&html.html);
+        let html = normalize_html(&html.html)?;
 
         // If it says it's a standalone component, make sure it doesn't contain {children}
         if is_standalone {
