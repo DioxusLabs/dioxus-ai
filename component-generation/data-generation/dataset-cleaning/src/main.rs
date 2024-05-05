@@ -7,7 +7,7 @@ use component_structure::Train;
 fn main() {
     let mut deserialized = HashSet::new();
     // Read all files in the data folder
-    let files = std::fs::read_dir("../old-data").unwrap();
+    let files = std::fs::read_dir("../merged").unwrap();
     // let files = std::fs::read_dir("../data").unwrap();
     for file in files.flatten() {
         if file.path().is_file() && file.path().extension() == Some(std::ffi::OsStr::new("json")) {
@@ -68,15 +68,23 @@ fn main() {
 
     // Write the full duplicated data to a file
     let mut csv_writer = csv::Writer::from_path("../validated.csv").unwrap();
-    for (prompt, validated_responses) in combined {
+    for (prompt, validated_responses) in &combined {
         let mut examples = HashSet::new();
         for validated_response in validated_responses {
-            let training_example = TrainingExample::new(prompt.to_string(), validated_response);
+            let training_example = TrainingExample::new(prompt.to_string(), validated_response.clone());
             examples.insert(training_example);
         }
         for example in examples {
             csv_writer.serialize(example).unwrap();
         }
+    }
+
+    // Write deduplicated data to a file
+    let mut csv_writer = csv::Writer::from_path("../deduplicated.csv").unwrap();
+    for (prompt, mut validated_responses) in combined {
+        let training_example =
+            TrainingExample::new(prompt.to_string(), validated_responses.pop().unwrap());
+        csv_writer.serialize(training_example).unwrap();
     }
 }
 
@@ -309,13 +317,15 @@ fn normalize_html(html: &str) -> Option<String> {
         }
     }
 
-    Some(output
-        .trim()
-        .replace("className", "class")
-        .replace("${{", "{")
-        .replace("{{", "{")
-        .replace("}}", "}")
-        .replace("${", "{"))
+    Some(
+        output
+            .trim()
+            .replace("className", "class")
+            .replace("${{", "{")
+            .replace("{{", "{")
+            .replace("}}", "}")
+            .replace("${", "{"),
+    )
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
