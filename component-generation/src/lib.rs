@@ -6,13 +6,13 @@ use rsx_rosetta::{rsx_from_html, Dom};
 use std::{collections::HashSet, io::Write};
 use tokio::sync::OnceCell;
 
-const REGEX_CONSTRAINTS: &str = r#"[^\n]+\nCOMPONENTS:\n(- [A-Z][a-z]\w+: [\w\d\.\- ]+\n)+HTML:\n[^\n]+\nCOMPONENT HTML:(\n[A-Z][a-z]\w+:\n[^\n]+)+<\|end_of_text\|>"#;
+const REGEX_CONSTRAINTS: &str = r#"[^\n]+\nCOMPONENTS:\n(- [A-Z][a-z]\w+: [\w\d\.\- ]+\n)+HTML:\n[^\n]+\nCOMPONENT HTML:(\n[A-Z][a-z]\w+:\n[^\n]+)+<\|eot_id\|>"#;
 
 async fn model() -> Llama {
     let model = FileSource::huggingface(
         "Demonthos/llama3".to_string(),
-        "main".to_string(),
-        "llama3-unsloth.Q4_K_M.gguf".to_string(),
+        "3387b74827b8429717e7e955efe4eaaea061e178".to_string(),
+        "llama3-v2.Q4_K_M.gguf".to_string(),
     );
     let tokenizer = FileSource::huggingface(
         "NousResearch/Meta-Llama-3-8B".to_string(),
@@ -34,7 +34,7 @@ async fn lazy_model() -> Llama {
 pub async fn generate_ui(prompt: &str) -> PartialState {
     let llm = lazy_model().await;
     let constraints = RegexParser::new(REGEX_CONSTRAINTS).unwrap();
-    let prompt = prompt.trim().to_string() + "\nDESCRIPTION:\n";
+    let prompt = "<|start_header_id|>user<|end_header_id|>".to_string() + prompt.trim() + "<|eot_id|><|start_header_id|>assistant<|end_header_id|>" + "\nDESCRIPTION:\n";
     let mut stream = llm
         .stream_structured_text(&prompt, constraints)
         .await
@@ -95,6 +95,9 @@ impl PartialState {
         if let Some(next_section) = self.current_section.next_section() {
             #[allow(clippy::single_match)]
             match next_section {
+                Section::Description => {
+                    println!();
+                }
                 Section::Components => {
                     println!("I think I will need components for this...");
                 }
@@ -151,7 +154,7 @@ impl PartialState {
                     Some(index) => {
                         // Only keep the HTML up to the end of the text
                         let html = html
-                            .split_once("<|end_of_text|>")
+                            .split_once("<|eot_id|>")
                             .map(|x| x.0)
                             .unwrap_or(&html);
                         self.components[index].html = html.to_string();
@@ -214,10 +217,10 @@ enum Section {
 impl Section {
     fn identifier(&self) -> &str {
         match self {
-            Section::Description => "DESCRIPTION",
-            Section::Components => "COMPONENTS",
-            Section::HTML => "HTML",
-            Section::ComponentHTML => "COMPONENT HTML",
+            Section::Description => "description",
+            Section::Components => "components",
+            Section::HTML => "html",
+            Section::ComponentHTML => "component html",
         }
     }
 
