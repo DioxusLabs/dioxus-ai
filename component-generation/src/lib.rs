@@ -6,7 +6,7 @@ use rsx_rosetta::{rsx_from_html, Dom};
 use std::{collections::HashSet, io::Write};
 use tokio::sync::OnceCell;
 
-const REGEX_CONSTRAINTS: &str = r#"[^\n]+\nCOMPONENTS:\n(- [A-Z][a-z]\w+: [\w\d\.\- ]+\n)+HTML:\n[^\n]+\nCOMPONENT HTML:(\n[A-Z][a-z]\w+:\n[^\n]+)+<\|eot_id\|>"#;
+const REGEX_CONSTRAINTS: &str = r#"[^\n]+\ncomponents:\n(- [A-Z][a-z]\w+: [\w\d\.\- ]+\n)+HTML:\n[^\n]+\ncomponent html:(\n[A-Z][a-z]\w+:\n[^\n]+)+<\|eot_id\|>"#;
 
 async fn model() -> Llama {
     let model = FileSource::huggingface(
