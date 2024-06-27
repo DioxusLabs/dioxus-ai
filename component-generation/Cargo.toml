@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-kalosm = { git = "https://github.com/floneum/floneum", branch = "improve-node-interface", default-features = false, features = ["language"] }
+kalosm = { git = "https://github.com/floneum/floneum", default-features = false, features = ["language"] }
 tokio = { version = "1.37.0", features = ["full"] }
 tracing-subscriber = "0.3.18"
 zstd-sys = "=2.0.9"
