@@ -2,7 +2,7 @@ use core::panic;
 use dioxus_autofmt::write_block_out;
 use kalosm::language::*;
 use regex::Regex;
-use rsx_rosetta::{rsx_from_html, Dom};
+use dioxus_rsx_rosetta::{rsx_from_html, Dom};
 use std::{collections::HashSet, io::Write};
 use tokio::sync::OnceCell;
 
@@ -36,9 +36,7 @@ pub async fn generate_ui(prompt: &str) -> PartialState {
     let constraints = RegexParser::new(REGEX_CONSTRAINTS).unwrap();
     let prompt = "<|start_header_id|>user<|end_header_id|>".to_string() + prompt.trim() + "<|eot_id|><|start_header_id|>assistant<|end_header_id|>" + "\nDESCRIPTION:\n";
     let mut stream = llm
-        .stream_structured_text(&prompt, constraints)
-        .await
-        .unwrap();
+        .stream_structured_text(&prompt, constraints);
 
     let mut state = PartialState::new();
 
@@ -83,7 +81,7 @@ impl PartialState {
     pub fn app_component(&self) -> String {
         let nodes = Dom::parse(&self.html).unwrap();
         let rsx = rsx_from_html(&nodes);
-        let block = write_block_out(rsx).unwrap();
+        let block = write_block_out(&rsx).unwrap();
         rsx_to_component("app", "", &block)
     }
 
@@ -200,7 +198,7 @@ impl Component {
     pub fn component_string(&self) -> String {
         let nodes = Dom::parse(&self.html).unwrap();
         let rsx = rsx_from_html(&nodes);
-        let block = write_block_out(rsx).unwrap();
+        let block = write_block_out(&rsx).unwrap();
         rsx_to_component(&self.name, &self.description, &block)
     }
 }

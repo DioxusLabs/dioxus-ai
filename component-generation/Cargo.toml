@@ -4,12 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-kalosm = { git = "https://github.com/floneum/floneum", default-features = false, features = ["language"] }
+kalosm = { version = "0.3", default-features = false, features = ["language"] }
 tokio = { version = "1.37.0", features = ["full"] }
 tracing-subscriber = "0.3.18"
 zstd-sys = "=2.0.9"
-dioxus-rsx-rosetta = { git = "https://github.com/DioxusLabs/dioxus" }
-dioxus-autofmt = { git = "https://github.com/DioxusLabs/dioxus" }
+dioxus-rsx-rosetta = { git = "https://github.com/DioxusLabs/dioxus", rev = "1e8693a0e860c64cccff17ae0fe700e3be39f7db" }
+dioxus-autofmt = { git = "https://github.com/DioxusLabs/dioxus", rev = "1e8693a0e860c64cccff17ae0fe700e3be39f7db" }
 syntect = "5.2.0"
 regex = "1.10.4"
 

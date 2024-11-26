@@ -149,6 +149,25 @@ checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
 
 [[package]]
 name = "arroy"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "73897699bf04bac935c0b120990d2a511e91e563e0f9769f9c8bb983d98dfbc9"
+dependencies = [
+ "bytemuck",
+ "byteorder",
+ "heed",
+ "log",
+ "memmap2",
+ "ordered-float",
+ "rand 0.8.5",
+ "rayon",
+ "roaring",
+ "tempfile",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "arroy"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dfc5f272f38fa063bbff0a7ab5219404e221493de005e2b4078c62d626ef567e"
@@ -243,10 +262,10 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "const_format",
- "dioxus-autofmt",
- "dioxus-rsx-rosetta",
+ "dioxus-autofmt 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "dioxus-rsx-rosetta 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
  "enumset",
- "kalosm",
+ "kalosm 0.3.2 (git+https://github.com/floneum/floneum)",
  "regex",
  "scraper",
  "syntect",
@@ -432,13 +451,38 @@ checksum = "9ac0150caa2ae65ca5bd83f25c7de183dea78d4d366469f148435e2acfbad0da"
 
 [[package]]
 name = "candle-core"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d5b18de020c2729dbf7ac390325312644808b6ba9b7962f1f724e9185b1d53c7"
+dependencies = [
+ "accelerate-src",
+ "byteorder",
+ "candle-metal-kernels 0.6.0",
+ "gemm",
+ "half 2.4.1",
+ "libc",
+ "memmap2",
+ "metal 0.27.0",
+ "num-traits",
+ "num_cpus",
+ "rand 0.8.5",
+ "rand_distr",
+ "rayon",
+ "safetensors",
+ "thiserror 1.0.69",
+ "yoke",
+ "zip 1.1.4",
+]
+
+[[package]]
+name = "candle-core"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7e1a39b963e261c58017edf2007e5b63425ad21538aaaf51fe23d1da41703701"
 dependencies = [
  "accelerate-src",
  "byteorder",
- "candle-metal-kernels",
+ "candle-metal-kernels 0.7.2",
  "gemm",
  "half 2.4.1",
  "libc",
@@ -457,6 +501,18 @@ dependencies = [
 
 [[package]]
 name = "candle-metal-kernels"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f889aacd02fd999620a0435133d7cf3b58c81ef9dd5e47c38939b7a72345ea86"
+dependencies = [
+ "metal 0.27.0",
+ "once_cell",
+ "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
+name = "candle-metal-kernels"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "166a92826d615d98b205e346e52128fa0439f2ab3302587403fdc558b4219e19"
@@ -469,13 +525,31 @@ dependencies = [
 
 [[package]]
 name = "candle-nn"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b006b30f66a0d94fc9cef0ac4de6ce510565f35ae2c6c35ce5d4aacfb0fc8eeb"
+dependencies = [
+ "accelerate-src",
+ "candle-core 0.6.0",
+ "candle-metal-kernels 0.6.0",
+ "half 2.4.1",
+ "metal 0.27.0",
+ "num-traits",
+ "rayon",
+ "safetensors",
+ "serde",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "candle-nn"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "898f8d21b8bdf559a1c8635e2db8386b2134015cd3003c18c1a30a22a67daec6"
 dependencies = [
  "accelerate-src",
- "candle-core",
- "candle-metal-kernels",
+ "candle-core 0.7.2",
+ "candle-metal-kernels 0.7.2",
  "half 2.4.1",
  "metal 0.27.0",
  "num-traits",
@@ -487,14 +561,34 @@ dependencies = [
 
 [[package]]
 name = "candle-transformers"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f0d4eb6a0d9279d5829b06b2bf3caa117904eefd6dcf879d16e687c4a84034c"
+dependencies = [
+ "accelerate-src",
+ "byteorder",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "fancy-regex",
+ "num-traits",
+ "rand 0.8.5",
+ "rayon",
+ "serde",
+ "serde_json",
+ "serde_plain",
+ "tracing",
+]
+
+[[package]]
+name = "candle-transformers"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06b8a130a8ac1d1e20696d89f7a52948902e037ad0eec085fceb77021007cfee"
 dependencies = [
  "accelerate-src",
  "byteorder",
- "candle-core",
- "candle-nn",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
  "fancy-regex",
  "num-traits",
  "rand 0.8.5",
@@ -674,9 +768,9 @@ dependencies = [
 name = "component-generation"
 version = "0.1.0"
 dependencies = [
- "dioxus-autofmt",
- "dioxus-rsx-rosetta",
- "kalosm",
+ "dioxus-autofmt 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "dioxus-rsx-rosetta 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "kalosm 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex",
  "syntect",
  "tokio",
@@ -1335,9 +1429,22 @@ version = "0.1.0"
 [[package]]
 name = "dioxus-autofmt"
 version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "dioxus-rsx 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "syn 2.0.89",
+]
+
+[[package]]
+name = "dioxus-autofmt"
+version = "0.6.0-alpha.5"
 source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
 dependencies = [
- "dioxus-rsx",
+ "dioxus-rsx 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
  "prettyplease",
  "proc-macro2",
  "quote",
@@ -1348,13 +1455,32 @@ dependencies = [
 [[package]]
 name = "dioxus-core"
 version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "const_format",
+ "dioxus-core-types 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "futures-channel",
+ "futures-util",
+ "generational-box 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "longest-increasing-subsequence",
+ "rustc-hash 1.1.0",
+ "rustversion",
+ "slab",
+ "slotmap",
+ "tracing",
+ "warnings",
+]
+
+[[package]]
+name = "dioxus-core"
+version = "0.6.0-alpha.5"
 source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
 dependencies = [
  "const_format",
- "dioxus-core-types",
+ "dioxus-core-types 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
  "futures-channel",
  "futures-util",
- "generational-box",
+ "generational-box 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
  "longest-increasing-subsequence",
  "rustc-hash 1.1.0",
  "rustversion",
@@ -1367,13 +1493,33 @@ dependencies = [
 [[package]]
 name = "dioxus-core-macro"
 version = "0.6.0-alpha.5"
-source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
 dependencies = [
  "convert_case 0.6.0",
- "dioxus-rsx",
+ "dioxus-rsx 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
  "proc-macro2",
  "quote",
  "syn 2.0.89",
+]
+
+[[package]]
+name = "dioxus-core-macro"
+version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "convert_case 0.6.0",
+ "dioxus-rsx 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.89",
+]
+
+[[package]]
+name = "dioxus-core-types"
+version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "once_cell",
 ]
 
 [[package]]
@@ -1387,13 +1533,29 @@ dependencies = [
 [[package]]
 name = "dioxus-hooks"
 version = "0.6.0-alpha.5"
-source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
 dependencies = [
- "dioxus-core",
- "dioxus-signals",
+ "dioxus-core 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "dioxus-signals 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
  "futures-channel",
  "futures-util",
- "generational-box",
+ "generational-box 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "rustversion",
+ "slab",
+ "tracing",
+ "warnings",
+]
+
+[[package]]
+name = "dioxus-hooks"
+version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "dioxus-core 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "dioxus-signals 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "futures-channel",
+ "futures-util",
+ "generational-box 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
  "rustversion",
  "slab",
  "tracing",
@@ -1403,21 +1565,52 @@ dependencies = [
 [[package]]
 name = "dioxus-html"
 version = "0.6.0-alpha.5"
-source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
 dependencies = [
- "dioxus-core",
- "dioxus-core-macro",
- "dioxus-core-types",
- "dioxus-hooks",
- "dioxus-html-internal-macro",
+ "dioxus-core 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "dioxus-core-macro 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "dioxus-core-types 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "dioxus-hooks 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "dioxus-html-internal-macro 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
  "enumset",
  "euclid",
  "futures-channel",
- "generational-box",
+ "generational-box 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
  "keyboard-types",
- "lazy-js-bundle",
+ "lazy-js-bundle 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
  "rustversion",
  "tracing",
+]
+
+[[package]]
+name = "dioxus-html"
+version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "dioxus-core 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "dioxus-core-macro 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "dioxus-core-types 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "dioxus-hooks 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "dioxus-html-internal-macro 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "enumset",
+ "euclid",
+ "futures-channel",
+ "generational-box 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "keyboard-types",
+ "lazy-js-bundle 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "rustversion",
+ "tracing",
+]
+
+[[package]]
+name = "dioxus-html-internal-macro"
+version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "convert_case 0.6.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.89",
 ]
 
 [[package]]
@@ -1427,6 +1620,17 @@ source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe70
 dependencies = [
  "convert_case 0.6.0",
  "proc-macro2",
+ "quote",
+ "syn 2.0.89",
+]
+
+[[package]]
+name = "dioxus-rsx"
+version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "proc-macro2",
+ "proc-macro2-diagnostics",
  "quote",
  "syn 2.0.89",
 ]
@@ -1445,12 +1649,28 @@ dependencies = [
 [[package]]
 name = "dioxus-rsx-rosetta"
 version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "convert_case 0.6.0",
+ "dioxus-autofmt 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "dioxus-html 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "dioxus-rsx 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "html_parser",
+ "htmlentity",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.89",
+]
+
+[[package]]
+name = "dioxus-rsx-rosetta"
+version = "0.6.0-alpha.5"
 source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
 dependencies = [
  "convert_case 0.6.0",
- "dioxus-autofmt",
- "dioxus-html",
- "dioxus-rsx",
+ "dioxus-autofmt 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "dioxus-html 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "dioxus-rsx 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
  "html_parser",
  "htmlentity",
  "proc-macro2",
@@ -1461,12 +1681,28 @@ dependencies = [
 [[package]]
 name = "dioxus-signals"
 version = "0.6.0-alpha.5"
-source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
 dependencies = [
- "dioxus-core",
+ "dioxus-core 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
  "futures-channel",
  "futures-util",
- "generational-box",
+ "generational-box 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db)",
+ "once_cell",
+ "parking_lot",
+ "rustc-hash 1.1.0",
+ "tracing",
+ "warnings",
+]
+
+[[package]]
+name = "dioxus-signals"
+version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "dioxus-core 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
+ "futures-channel",
+ "futures-util",
+ "generational-box 0.6.0-alpha.5 (git+https://github.com/DioxusLabs/dioxus)",
  "once_cell",
  "parking_lot",
  "rustc-hash 1.1.0",
@@ -2072,6 +2308,15 @@ dependencies = [
  "paste",
  "raw-cpuid",
  "seq-macro",
+]
+
+[[package]]
+name = "generational-box"
+version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
+dependencies = [
+ "parking_lot",
+ "tracing",
 ]
 
 [[package]]
@@ -3038,23 +3283,50 @@ dependencies = [
 [[package]]
 name = "kalosm"
 version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1bf68dcf6cbd2ed684756bf3f31074c35511a8d1f24e3a073f7a5cb691650301"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "comfy-table",
+ "ego-tree",
+ "futures-util",
+ "hdrhistogram",
+ "image 0.24.9",
+ "kalosm-common 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-language 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-sound 0.3.5",
+ "kalosm-streams 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-vision 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "llm-samplers",
+ "num-traits",
+ "once_cell",
+ "rand 0.8.5",
+ "serde",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "kalosm"
+version = "0.3.2"
 source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
 dependencies = [
  "anyhow",
- "arroy",
+ "arroy 0.5.0",
  "async-trait",
- "candle-core",
+ "candle-core 0.7.2",
  "comfy-table",
  "ego-tree",
  "futures-util",
  "hdrhistogram",
  "heed",
  "image 0.24.9",
- "kalosm-common",
- "kalosm-language",
- "kalosm-sound",
- "kalosm-streams",
- "kalosm-vision",
+ "kalosm-common 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-language 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-sound 0.3.4",
+ "kalosm-streams 0.3.2 (git+https://github.com/floneum/floneum)",
+ "kalosm-vision 0.3.2 (git+https://github.com/floneum/floneum)",
  "llm-samplers",
  "num-traits",
  "once_cell",
@@ -3068,11 +3340,31 @@ dependencies = [
 [[package]]
 name = "kalosm-common"
 version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a7fb35439e8fd1d109b7cffb49957424cfd0fef841172ba78f67f0d1668587e4"
+dependencies = [
+ "anyhow",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "dirs",
+ "hf-hub",
+ "httpdate",
+ "indicatif",
+ "metal 0.29.0",
+ "once_cell",
+ "reqwest 0.11.27",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "kalosm-common"
+version = "0.3.3"
 source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
 dependencies = [
  "anyhow",
- "candle-core",
- "candle-nn",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
  "dirs",
  "hf-hub",
  "httpdate",
@@ -3087,13 +3379,14 @@ dependencies = [
 [[package]]
 name = "kalosm-language"
 version = "0.3.3"
-source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82a29025bb188e44e498f6be8a1b2cee1b9f8e19c4eb796e2edad959bf773865"
 dependencies = [
  "anyhow",
- "arroy",
+ "arroy 0.3.1",
  "async-trait",
- "candle-core",
- "candle-nn",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
  "chrono",
  "convert_case 0.6.0",
  "dashmap",
@@ -3105,10 +3398,62 @@ dependencies = [
  "heed",
  "image 0.24.9",
  "itertools 0.11.0",
- "kalosm-language-model",
- "kalosm-llama",
- "kalosm-sample",
- "kalosm-streams",
+ "kalosm-language-model 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-llama 0.3.4",
+ "kalosm-sample 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-streams 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "llm-samplers",
+ "log",
+ "meval",
+ "once_cell",
+ "pulldown-cmark",
+ "rand 0.8.5",
+ "rbert 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "readability",
+ "reqwest 0.11.27",
+ "rphi 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rss",
+ "rustc-hash 1.1.0",
+ "scraper",
+ "serde",
+ "serde_json",
+ "slab",
+ "srx",
+ "tempfile",
+ "texting_robots",
+ "tokenizers",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "url",
+ "whatlang",
+]
+
+[[package]]
+name = "kalosm-language"
+version = "0.3.3"
+source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
+dependencies = [
+ "anyhow",
+ "arroy 0.5.0",
+ "async-trait",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
+ "chrono",
+ "convert_case 0.6.0",
+ "dashmap",
+ "docx-rs",
+ "ego-tree",
+ "futures-util",
+ "half 2.4.1",
+ "headless_chrome",
+ "heed",
+ "image 0.24.9",
+ "itertools 0.11.0",
+ "kalosm-language-model 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-llama 0.3.3",
+ "kalosm-sample 0.3.2 (git+https://github.com/floneum/floneum)",
+ "kalosm-streams 0.3.2 (git+https://github.com/floneum/floneum)",
  "llm-samplers",
  "log",
  "meval",
@@ -3117,11 +3462,11 @@ dependencies = [
  "pdf_text",
  "pulldown-cmark",
  "rand 0.8.5",
- "rbert",
+ "rbert 0.3.3 (git+https://github.com/floneum/floneum)",
  "readability",
  "reqwest 0.11.27",
  "roaring",
- "rphi",
+ "rphi 0.3.2 (git+https://github.com/floneum/floneum)",
  "rss",
  "rustc-hash 1.1.0",
  "scraper",
@@ -3143,15 +3488,43 @@ dependencies = [
 [[package]]
 name = "kalosm-language-model"
 version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f1c90ddd0ff8d1a0f0bbf472309b9e1d87e5471436d543cb39709e5b96825934"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "candle-core 0.6.0",
+ "futures-util",
+ "kalosm-common 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-sample 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-streams 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "llm-samplers",
+ "log",
+ "lru",
+ "once_cell",
+ "postcard",
+ "rand 0.8.5",
+ "rayon",
+ "safetensors",
+ "serde",
+ "thiserror 1.0.69",
+ "tokenizers",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "kalosm-language-model"
+version = "0.3.3"
 source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
 dependencies = [
  "anyhow",
  "async-trait",
- "candle-core",
+ "candle-core 0.7.2",
  "futures-util",
- "kalosm-common",
- "kalosm-sample",
- "kalosm-streams",
+ "kalosm-common 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-sample 0.3.2 (git+https://github.com/floneum/floneum)",
+ "kalosm-streams 0.3.2 (git+https://github.com/floneum/floneum)",
  "llm-samplers",
  "log",
  "lru",
@@ -3174,14 +3547,38 @@ source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49
 dependencies = [
  "anyhow",
  "async-trait",
- "candle-core",
- "candle-nn",
- "candle-transformers",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
+ "candle-transformers 0.7.2",
  "half 2.4.1",
- "kalosm-common",
- "kalosm-language-model",
- "kalosm-sample",
- "kalosm-streams",
+ "kalosm-common 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-language-model 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-sample 0.3.2 (git+https://github.com/floneum/floneum)",
+ "kalosm-streams 0.3.2 (git+https://github.com/floneum/floneum)",
+ "llm-samplers",
+ "once_cell",
+ "rand 0.8.5",
+ "tokenizers",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "kalosm-llama"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4013b98102059c55b0d58d37a8a41ca30b5be297651307b2a81754ab9021bbdd"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "candle-transformers 0.6.0",
+ "half 2.4.1",
+ "kalosm-common 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-language-model 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-sample 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-streams 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "llm-samplers",
  "once_cell",
  "rand 0.8.5",
@@ -3193,20 +3590,51 @@ dependencies = [
 [[package]]
 name = "kalosm-ocr"
 version = "0.3.2"
-source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9457b4642db8df2354e0e2b456bc94a7127df5a0ee1499a6630688e8deff3d83"
 dependencies = [
  "anyhow",
- "candle-core",
- "candle-nn",
- "candle-transformers",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "candle-transformers 0.6.0",
  "hf-hub",
  "image 0.24.9",
- "kalosm-common",
+ "kalosm-common 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_json",
  "tokenizers",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "kalosm-ocr"
+version = "0.3.2"
+source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
+dependencies = [
+ "anyhow",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
+ "candle-transformers 0.7.2",
+ "hf-hub",
+ "image 0.24.9",
+ "kalosm-common 0.3.3 (git+https://github.com/floneum/floneum)",
+ "serde",
+ "serde_json",
+ "tokenizers",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "kalosm-parse-macro"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8828421bb7804381c17dda1924f2fe7275d029f53d64e5424ff08756b412312f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.89",
 ]
 
 [[package]]
@@ -3222,10 +3650,21 @@ dependencies = [
 [[package]]
 name = "kalosm-sample"
 version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "174bce2afa3cbb07ded04625b191207deaf10d6cfa7274da3694025f24a53324"
+dependencies = [
+ "anyhow",
+ "kalosm-parse-macro 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex-automata 0.4.9",
+]
+
+[[package]]
+name = "kalosm-sample"
+version = "0.3.2"
 source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
 dependencies = [
  "anyhow",
- "kalosm-parse-macro",
+ "kalosm-parse-macro 0.3.2 (git+https://github.com/floneum/floneum)",
  "regex-automata 0.4.9",
 ]
 
@@ -3237,9 +3676,9 @@ dependencies = [
  "anyhow",
  "async-trait",
  "byteorder",
- "candle-core",
- "candle-nn",
- "candle-transformers",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
+ "candle-transformers 0.7.2",
  "cpal",
  "dasp",
  "futures-channel",
@@ -3247,18 +3686,63 @@ dependencies = [
  "futures-util",
  "hound",
  "itertools 0.10.5",
- "kalosm-streams",
+ "kalosm-streams 0.3.2 (git+https://github.com/floneum/floneum)",
  "nnnoiseless",
  "ort",
  "ort-sys",
  "rand 0.8.5",
  "rodio",
- "rwhisper",
+ "rwhisper 0.3.5 (git+https://github.com/floneum/floneum)",
  "serde_json",
  "tokenizers",
  "tokio",
  "tracing",
  "voice_activity_detector",
+]
+
+[[package]]
+name = "kalosm-sound"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c4537e4a52f4af29e99fa9b79382ca6e0aa386d0c17380cb1ce44be3073eaa04"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "byteorder",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "candle-transformers 0.6.0",
+ "cpal",
+ "dasp",
+ "futures-channel",
+ "futures-core",
+ "futures-util",
+ "hound",
+ "itertools 0.10.5",
+ "kalosm-streams 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nnnoiseless",
+ "ort",
+ "ort-sys",
+ "rand 0.8.5",
+ "rodio",
+ "rwhisper 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json",
+ "tokenizers",
+ "tokio",
+ "tracing",
+ "voice_activity_detector",
+]
+
+[[package]]
+name = "kalosm-streams"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52804ab9080a37b0edf0b82d523973097fa19dbfc382743efc750983ebebb00c"
+dependencies = [
+ "futures-util",
+ "image 0.24.9",
+ "pin-project-lite",
+ "tokio",
 ]
 
 [[package]]
@@ -3275,12 +3759,24 @@ dependencies = [
 [[package]]
 name = "kalosm-vision"
 version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77cdaeb0d6a8ecafcd9d1874bedc02e8e8e08963954b9164513348eec88c1ebd"
+dependencies = [
+ "image 0.24.9",
+ "kalosm-ocr 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rwuerstchen 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "segment-anything-rs 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "kalosm-vision"
+version = "0.3.2"
 source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
 dependencies = [
  "image 0.24.9",
- "kalosm-ocr",
- "rwuerstchen",
- "segment-anything-rs",
+ "kalosm-ocr 0.3.2 (git+https://github.com/floneum/floneum)",
+ "rwuerstchen 0.3.2 (git+https://github.com/floneum/floneum)",
+ "segment-anything-rs 0.3.2 (git+https://github.com/floneum/floneum)",
 ]
 
 [[package]]
@@ -3291,6 +3787,11 @@ checksum = "b750dcadc39a09dbadd74e118f6dd6598df77fa01df0cfcdc52c28dece74528a"
 dependencies = [
  "bitflags 2.6.0",
 ]
+
+[[package]]
+name = "lazy-js-bundle"
+version = "0.6.0-alpha.5"
+source = "git+https://github.com/DioxusLabs/dioxus?rev=1e8693a0e860c64cccff17ae0fe700e3be39f7db#1e8693a0e860c64cccff17ae0fe700e3be39f7db"
 
 [[package]]
 name = "lazy-js-bundle"
@@ -4912,15 +5413,36 @@ dependencies = [
 [[package]]
 name = "rbert"
 version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "555b56b65f82165dc8d55ea1a69a0d73c54ebf682ebc1d39fd64634b1bc9ea15"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "candle-transformers 0.6.0",
+ "kalosm-common 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-language-model 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "metal 0.27.0",
+ "serde",
+ "serde_json",
+ "tokenizers",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "rbert"
+version = "0.3.3"
 source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
 dependencies = [
  "anyhow",
  "async-trait",
- "candle-core",
- "candle-nn",
- "candle-transformers",
- "kalosm-common",
- "kalosm-language-model",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
+ "candle-transformers 0.7.2",
+ "kalosm-common 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-language-model 0.3.3 (git+https://github.com/floneum/floneum)",
  "metal 0.27.0",
  "serde",
  "serde_json",
@@ -5135,17 +5657,40 @@ dependencies = [
 [[package]]
 name = "rphi"
 version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7ece40a6e0a3980fb5d4151468fbb5faa34e9c24095163b876529042d309818c"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "candle-transformers 0.6.0",
+ "kalosm-common 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-language-model 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-sample 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-streams 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "llm-samplers",
+ "rand 0.8.5",
+ "serde_json",
+ "tokenizers",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "rphi"
+version = "0.3.2"
 source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
 dependencies = [
  "anyhow",
  "async-trait",
- "candle-core",
- "candle-nn",
- "candle-transformers",
- "kalosm-common",
- "kalosm-language-model",
- "kalosm-sample",
- "kalosm-streams",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
+ "candle-transformers 0.7.2",
+ "kalosm-common 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-language-model 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-sample 0.3.2 (git+https://github.com/floneum/floneum)",
+ "kalosm-streams 0.3.2 (git+https://github.com/floneum/floneum)",
  "llm-samplers",
  "rand 0.8.5",
  "serde_json",
@@ -5280,25 +5825,75 @@ checksum = "0e819f2bc632f285be6d7cd36e25940d45b2391dd6d9b939e79de557f7014248"
 [[package]]
 name = "rwhisper"
 version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd28fb94052e0afefbb74aa8a78f634da3c2b7b4108b7f25942136a89cbee8c9"
+dependencies = [
+ "accelerate-src",
+ "anyhow",
+ "async-trait",
+ "byteorder",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "candle-transformers 0.6.0",
+ "cpal",
+ "futures-util",
+ "hf-hub",
+ "hound",
+ "kalosm-common 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-language-model 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-streams 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand 0.8.5",
+ "rodio",
+ "serde_json",
+ "tokenizers",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "rwhisper"
+version = "0.3.5"
 source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
 dependencies = [
  "accelerate-src",
  "anyhow",
  "async-trait",
  "byteorder",
- "candle-core",
- "candle-nn",
- "candle-transformers",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
+ "candle-transformers 0.7.2",
  "cpal",
  "futures-util",
  "hf-hub",
  "hound",
- "kalosm-common",
- "kalosm-language-model",
- "kalosm-streams",
+ "kalosm-common 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-language-model 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-streams 0.3.2 (git+https://github.com/floneum/floneum)",
  "rand 0.8.5",
  "rodio",
  "serde_json",
+ "tokenizers",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "rwuerstchen"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "829dee0215e067a4fa2e676719ad5bb99ebaef1a527bc4521f74ab06d48a85cd"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "candle-transformers 0.6.0",
+ "futures-util",
+ "hf-hub",
+ "image 0.24.9",
+ "kalosm-common 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-language-model 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kalosm-streams 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokenizers",
  "tokio",
  "tracing",
@@ -5311,15 +5906,15 @@ source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49
 dependencies = [
  "anyhow",
  "async-trait",
- "candle-core",
- "candle-nn",
- "candle-transformers",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
+ "candle-transformers 0.7.2",
  "futures-util",
  "hf-hub",
  "image 0.24.9",
- "kalosm-common",
- "kalosm-language-model",
- "kalosm-streams",
+ "kalosm-common 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-language-model 0.3.3 (git+https://github.com/floneum/floneum)",
+ "kalosm-streams 0.3.2 (git+https://github.com/floneum/floneum)",
  "tokenizers",
  "tokio",
  "tracing",
@@ -5407,12 +6002,27 @@ dependencies = [
 [[package]]
 name = "segment-anything-rs"
 version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "258855a26a09cf5f58381be50225a2bac493d9db6783fffd79073cd13ebe4484"
+dependencies = [
+ "anyhow",
+ "candle-core 0.6.0",
+ "candle-nn 0.6.0",
+ "candle-transformers 0.6.0",
+ "hf-hub",
+ "image 0.24.9",
+ "tracing",
+]
+
+[[package]]
+name = "segment-anything-rs"
+version = "0.3.2"
 source = "git+https://github.com/floneum/floneum#aac51452c134e784a9d6185ca2f7d49b25320324"
 dependencies = [
  "anyhow",
- "candle-core",
- "candle-nn",
- "candle-transformers",
+ "candle-core 0.7.2",
+ "candle-nn 0.7.2",
+ "candle-transformers 0.7.2",
  "hf-hub",
  "image 0.24.9",
  "tracing",
