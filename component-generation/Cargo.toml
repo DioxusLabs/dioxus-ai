@@ -8,8 +8,8 @@ kalosm = { git = "https://github.com/floneum/floneum", default-features = false,
 tokio = { version = "1.37.0", features = ["full"] }
 tracing-subscriber = "0.3.18"
 zstd-sys = "=2.0.9"
-rsx-rosetta = { git = "https://github.com/DioxusLabs/dioxus", branch = "jk/jsx-to-rsx" }
-dioxus-autofmt = { git = "https://github.com/DioxusLabs/dioxus", branch = "jk/jsx-to-rsx" }
+dioxus-rsx-rosetta = { git = "https://github.com/DioxusLabs/dioxus" }
+dioxus-autofmt = { git = "https://github.com/DioxusLabs/dioxus" }
 syntect = "5.2.0"
 regex = "1.10.4"
 
